@@ -6,10 +6,4 @@ import reactor.core.publisher.Mono;
 public interface InterfaceUserUseCase {
 
 
-    public Mono<User> saveUser(User user);
-
-    public Mono<User> getUserById(Long id);
-
-    Mono<Boolean> existsByEmail(String email);
-
 }

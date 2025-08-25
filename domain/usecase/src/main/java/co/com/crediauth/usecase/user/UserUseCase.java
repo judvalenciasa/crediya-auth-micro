@@ -9,19 +9,6 @@ import reactor.core.publisher.Mono;
 public class UserUseCase implements InterfaceUserUseCase{
     private final UserRepository userRepositorio;
 
-    @Override
-    public Mono<User> saveUser(User user){
-        return userRepositorio.saveUser(user);
-    }
 
-    @Override
-    public Mono<User> getUserById(Long id){
-        return userRepositorio.getUserById(id);
-    }
-
-    @Override
-    public Mono<Boolean> existsByEmail(String email) {
-        return userRepositorio.existsByEmail(email);
-    }
 
 }
