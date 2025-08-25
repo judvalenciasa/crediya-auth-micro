@@ -3,8 +3,6 @@ import lombok.Builder;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-
-@Builder(toBuilder = true)
 public class User {
     private Long id;
     private String nombres;
@@ -14,6 +12,7 @@ public class User {
     private String fechaNacimiento;
     private String direccion;
     private String telefono;
+
 
     public User(){}
 

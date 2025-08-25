@@ -17,8 +17,6 @@ public class RouterRest {
 
     @Bean
     public RouterFunction<ServerResponse> routerFunction(Handler handler) {
-        return route(POST(BASE_URL_MATCHER + "/usuarios"), handler::saveUser)
-                .andRoute(POST(BASE_URL_MATCHER + "/api/usecase/otherpath"), handler::listenPOSTUseCase)
-                .and(route(GET(BASE_URL_MATCHER + "/api/otherusercase/path"), handler::listenGETOtherUseCase));
+        return route(POST("/api/v1/user"), handler::createUser);
     }
 }

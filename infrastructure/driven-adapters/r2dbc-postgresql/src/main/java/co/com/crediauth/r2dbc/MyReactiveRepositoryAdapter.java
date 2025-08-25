@@ -19,4 +19,16 @@ public class MyReactiveRepositoryAdapter extends ReactiveAdapterOperations<
 
         super(repository, mapper, d -> mapper.map(d, User.class/* change for domain model */));
     }
+
+
+    @Override
+    public Mono<User> saveUser(User user) {
+        UserEntity userEntity = mapper.map(user, UserEntity.class);
+        return repository.save(userEntity).map(e -> mapper.map(e, User.class));
+    }
+
+    @Override
+    public Mono<Boolean> existsByEmail(String email) {
+        return null;
+    }
 }
