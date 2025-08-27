@@ -1,6 +1,7 @@
 package co.com.crediauth.api;
 
-import co.com.crediauth.model.user.User;
+import co.com.crediauth.api.mapper.UserMapper;
+import co.com.crediauth.api.requestdto.UserRequestDto;
 import co.com.crediauth.usecase.user.InterfaceUserUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -15,10 +16,15 @@ public class Handler {
 
     private final InterfaceUserUseCase interfaceUserUseCase;
 
+    private final UserMapper userMapper;
+
     public Mono<ServerResponse> createUser(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(User.class)
-                .flatMap(dato -> interfaceUserUseCase.saveUser(dato))
-                .flatMap(userCreate -> ServerResponse.ok()
-                        .contentType(MediaType.APPLICATION_JSON).bodyValue(userCreate));
+        return serverRequest.bodyToMono(UserRequestDto.class)
+                .map(userMapper::toEntity)
+                .flatMap(interfaceUserUseCase::saveUser)
+                .map(userMapper::toDto)
+                .flatMap(userResponse -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(userResponse));
     }
 }
