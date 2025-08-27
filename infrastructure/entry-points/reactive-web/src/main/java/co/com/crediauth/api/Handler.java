@@ -1,6 +1,7 @@
 package co.com.crediauth.api;
 
 import co.com.crediauth.api.errordto.ErrorResponseDto;
+import co.com.crediauth.api.handler.GlobalExceptionHandler;
 import co.com.crediauth.api.mapper.UserMapper;
 import co.com.crediauth.api.requestdto.UserRequestDto;
 import co.com.crediauth.usecase.user.InterfaceUserUseCase;
@@ -20,26 +21,18 @@ import java.time.format.DateTimeFormatter;
 public class Handler {
 
     private final InterfaceUserUseCase interfaceUserUseCase;
-
     private final UserMapper userMapper;
+    private final GlobalExceptionHandler exceptionHandler;
 
     public Mono<ServerResponse> createUser(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(UserRequestDto.class)
                 .map(userMapper::toEntity)
                 .flatMap(interfaceUserUseCase::saveUser)
+
                 .map(userMapper::toDto)
                 .flatMap(userResponse -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(userResponse))
-                .onErrorResume(error -> {
-                    ErrorResponseDto errorResponse = new ErrorResponseDto(
-                            error.getMessage(),
-                            HttpStatus.BAD_REQUEST.toString(),
-                            LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
-                    );
-                    return ServerResponse
-                            .badRequest()
-                            .bodyValue(errorResponse);
-                });
+                .onErrorResume(exceptionHandler::handleError);
     }
 }
