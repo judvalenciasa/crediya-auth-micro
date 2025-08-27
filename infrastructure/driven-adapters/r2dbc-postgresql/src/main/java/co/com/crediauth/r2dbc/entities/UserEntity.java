@@ -9,30 +9,29 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.time.LocalDate;
 
 @Data
-@Table(name="usuarios")
+@Table(name="users")
 public class UserEntity {
-
     @Id
     private Long id;
 
-    @Column("nombres")
-    private String nombres;
+    @Column("names")
+    private String names;
 
-    @Column("apellidos")
-    private String apellidos;
+    @Column("lastNames")
+    private String lastNames;
 
-    @Column("correo_electronico")
-    private String correoElectronico;
+    @Column("email")
+    private String email;
 
-    @Column("salario_base")
-    private Double salarioBase;
+    @Column("baseSalary")
+    private Double baseSalary;
 
-    @Column("fecha_nacimiento")
-    private LocalDate fechaNacimiento;
+    @Column("birthDate")
+    private LocalDate birthDate;
 
-    @Column("direccion")
-    private String direccion;
+    @Column("address")
+    private String address;
 
-    @Column("telefono")
-    private String telefono;
+    @Column("phone")
+    private String phone;
 }
