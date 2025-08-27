@@ -4,6 +4,7 @@ import co.com.crediauth.model.user.User;
 import co.com.crediauth.model.user.gateways.UserRepository;
 import co.com.crediauth.r2dbc.entities.UserEntity;
 import co.com.crediauth.r2dbc.helper.ReactiveAdapterOperations;
+import co.com.crediauth.r2dbc.mapper.UserEntityMapper;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
@@ -21,11 +22,19 @@ public class MyReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     }
 
 
+
     @Override
     public Mono<User> saveUser(User user) {
         UserEntity userEntity = mapper.map(user, UserEntity.class);
         return repository.save(userEntity).map(e -> mapper.map(e, User.class));
     }
+
+    /*
+    public Mono<User> saveUser(User user) {
+        UserEntity entity = UserEntityMapper.toEntity(user);
+        return repository.save(entity)
+                .map(UserEntityMapper::toDomain);
+    }*/
 
     @Override
     public Mono<Boolean> existsByEmail(String email) {

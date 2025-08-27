@@ -20,9 +20,7 @@ public class GlobalExceptionHandler {
 
         if (error instanceof BusinessException) {
             return handleBusinessException((BusinessException) error);
-        } else if (error instanceof DuplicateKeyException) {
-            return handleDuplicateKeyException((DuplicateKeyException) error);
-        }else if (error instanceof ValidationException) {
+        } else if (error instanceof ValidationException) {
             return handleCustomValidationException((ValidationException) error);
         }
 
@@ -40,33 +38,6 @@ public class GlobalExceptionHandler {
                 .bodyValue(errorResponse);
     }
 
-    private Mono<ServerResponse> handleDuplicateKeyException(DuplicateKeyException ex) {
-        String message = "Error de duplicidad en base de datos";
-        if (ex.getMessage().contains("users_email_key")) {
-            message = "El correo electrónico ya está registrado en el sistema";
-        }
-
-        ErrorResponseDto errorResponse = new ErrorResponseDto(
-                message,
-                "USR001",
-                LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
-        );
-        return ServerResponse
-                .status(HttpStatus.CONFLICT)
-                .bodyValue(errorResponse);
-    }
-
-    private Mono<ServerResponse> handleGenericError(Throwable ex) {
-        ErrorResponseDto errorResponse = new ErrorResponseDto(
-                "Ha ocurrido un error inesperado" + ex.getMessage(),
-                "GEN001",
-                LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
-        );
-        return ServerResponse
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .bodyValue(errorResponse);
-    }
-
     private Mono<ServerResponse> handleCustomValidationException(ValidationException ex) {
         String message = ex.getErrors().getAllErrors().get(0).getDefaultMessage();
 
@@ -80,5 +51,15 @@ public class GlobalExceptionHandler {
                 .bodyValue(errorResponse);
     }
 
+    private Mono<ServerResponse> handleGenericError(Throwable ex) {
+        ErrorResponseDto errorResponse = new ErrorResponseDto(
+                "Ha ocurrido un error inesperado" + ex.getMessage(),
+                "GEN001",
+                LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
+        );
+        return ServerResponse
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .bodyValue(errorResponse);
+    }
 
 }
