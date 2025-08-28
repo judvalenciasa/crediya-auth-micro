@@ -18,10 +18,11 @@ public class UserUseCase implements InterfaceUserUseCase {
                     if (exists) {
                         return Mono.error(new BusinessException("Email already exists"));
                     }
+                    if (user.getBaseSalary() > 15000000) {
+                        return Mono.error(new BusinessException("Base salary cannot exceed 15000000"));
+                    }
                     return userRepository.saveUser(user);
                 });
     }
-
-
 
 }
