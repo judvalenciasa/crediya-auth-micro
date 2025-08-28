@@ -33,7 +33,7 @@ class UserUseCaseTest {
 
     @Test
     void When_UserInformationIsCorrect_Expect_UserToBeSavedCorrectly() {
-        // 1️⃣ Crear usuario de prueba
+
         User user = new User();
         user.setNames("juan");
         user.setLastNames("perez");
@@ -44,14 +44,14 @@ class UserUseCaseTest {
         user.setPhone("3214567890");
         user.setDocumentId("125458522");
 
-        // 2️⃣ Mock del repositorio
+
         when(userRepository.existsByEmail("juan@gmail.com")).thenReturn(Mono.just(false));
         when(userRepository.saveUser(any(User.class))).thenReturn(Mono.just(user));
 
-        // 3️⃣ Ejecutar el UseCase
+
         Mono<User> result = userUseCase.saveUser(user);
 
-        // 4️⃣ Verificar resultado con StepVerifier
+
         StepVerifier.create(result)
                 .expectNextMatches(savedUser ->
                         savedUser.getEmail().equals("juan@gmail.com") &&
@@ -65,9 +65,65 @@ class UserUseCaseTest {
                 )
                 .verifyComplete();
 
-        // 5️⃣ Verificar que se llamaron los métodos del mock
+
         verify(userRepository).existsByEmail("juan@gmail.com");
         verify(userRepository).saveUser(user);
+    }
+
+
+    @Test
+    void When_EmailAlreadyExists_Expect_BusinessException() {
+        // Given
+        User user = new User();
+        user.setNames("juan");
+        user.setLastNames("perez");
+        user.setEmail("juan@gmail.com");
+        user.setBaseSalary(1000000.0);
+        user.setBirthDate(LocalDate.parse("1995-05-09"));
+        user.setAddress("Calle 65 H 39-57");
+        user.setPhone("3214567890");
+        user.setDocumentId("125458522");
+
+        // When
+        when(userRepository.existsByEmail("juan@gmail.com")).thenReturn(Mono.just(true));
+
+        // Then
+        Mono<User> result = userUseCase.saveUser(user);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable ->
+                        throwable instanceof BusinessException &&
+                                throwable.getMessage().contains("Email already exists")
+                )
+                .verify();
+    }
+
+    @Test
+    void When_BaseSalaryGreaterThan_Expect_BusinessException() {
+        // Given
+        User user = new User();
+        user.setNames("juan");
+        user.setLastNames("perez");
+        user.setEmail("juan@gmail.com");
+        user.setBaseSalary(100000000.0);
+        user.setBirthDate(LocalDate.parse("1995-05-09"));
+        user.setAddress("Calle 65 H 39-57");
+        user.setPhone("3214567890");
+        user.setDocumentId("125458522");
+
+        // When
+        when(userRepository.existsByEmail("juan@gmail.com")).thenReturn(Mono.just(false));
+
+        // Then
+        Mono<User> result = userUseCase.saveUser(user);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable ->
+                        throwable instanceof BusinessException &&
+                                throwable.getMessage().contains("Base salary cannot exceed 15000000")
+                )
+                .verify();
+
     }
 
 
