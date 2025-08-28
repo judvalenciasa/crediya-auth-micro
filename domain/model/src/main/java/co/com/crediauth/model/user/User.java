@@ -1,20 +1,30 @@
 package co.com.crediauth.model.user;
 
 
+import java.time.LocalDate;
+
 public class User {
     private Long id;
     private String names;
     private String lastNames;
     private String email;
     private Double baseSalary;
-    private String birthDate;
+    private LocalDate birthDate;
     private String address;
     private String phone;
+    private String documentId;
 
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
 
     public User(){}
 
-    public User(String nombres, String lastNames, String email, Double baseSalary, String birthDate, String address, String phone) {
+    public User(String nombres, String lastNames, String email, Double baseSalary, LocalDate  birthDate, String address, String phone, String documentId) {
         this.names = nombres;
         this.lastNames = lastNames;
         this.email = email;
@@ -22,6 +32,7 @@ public class User {
         this.birthDate = birthDate;
         this.address = address;
         this.phone = phone;
+        this.documentId = documentId;
     }
 
     public Long getId() {
@@ -64,11 +75,11 @@ public class User {
         this.baseSalary = baseSalary;
     }
 
-    public String getBirthDate() {
+    public LocalDate  getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(String birthDate) {
+    public void setBirthDate(LocalDate  birthDate) {
         this.birthDate = birthDate;
     }
 

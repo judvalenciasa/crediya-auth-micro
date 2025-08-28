@@ -7,31 +7,35 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data
-@Table(name="users")
+@Table(name="usuarios")
 public class UserEntity {
     @Id
     private Long id;
 
-    @Column("names")
+    @Column("nombre")
     private String names;
 
-    @Column("lastNames")
+    @Column("apellido")
     private String lastNames;
 
     @Column("email")
     private String email;
 
-    @Column("baseSalary")
+    @Column("salario_base")
     private Double baseSalary;
 
-    @Column("birthDate")
+    @Column("fecha_nacimiento")
     private LocalDate birthDate;
 
-    @Column("address")
+    @Column("direccion")
     private String address;
 
-    @Column("phone")
+    @Column("telefono")
     private String phone;
+
+    @Column("documento_identidad")
+    private String documentId;
 }

@@ -1,6 +1,10 @@
 package co.com.crediauth.api.requestdto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 public record UserRequestDto(
         @NotBlank(message = "Names cannot be empty")
@@ -18,9 +22,12 @@ public record UserRequestDto(
         @Max(value = 15000000, message = "Base salary must not exceed 15,000,000")
         Double baseSalary,
 
-        String birthDate,
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        LocalDate birthDate,
         String address,
-        String phone
+        String phone,
+
+        String documentId
 ) {
 }
 

@@ -31,3 +31,7 @@ adapters:
     schema: "public"
     username: "crediya"
     password: "crediya"
+
+springdoc:
+  swagger-ui:
+    url: /openapi/openapi.yaml

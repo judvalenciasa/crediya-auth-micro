@@ -1,6 +1,5 @@
 package co.com.crediauth.api;
 
-import co.com.crediauth.api.errordto.ErrorResponseDto;
 import co.com.crediauth.api.exception.ValidationException;
 import co.com.crediauth.api.handler.GlobalExceptionHandler;
 import co.com.crediauth.api.mapper.UserMapper;
@@ -14,7 +13,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -22,7 +20,7 @@ import org.springframework.validation.Validator;
 
 @Component
 @RequiredArgsConstructor
-public class Handler {
+public class UserHandler {
 
     private final InterfaceUserUseCase interfaceUserUseCase;
     private final UserMapper userMapper;

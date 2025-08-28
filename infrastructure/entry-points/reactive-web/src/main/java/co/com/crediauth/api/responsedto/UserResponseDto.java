@@ -1,5 +1,7 @@
 package co.com.crediauth.api.responsedto;
 
+import java.time.LocalDate;
+
 public record UserResponseDto(
 
         String id,
@@ -7,8 +9,9 @@ public record UserResponseDto(
         String lastNames,
         String email,
         Double baseSalary,
-        String birthDate,
+        LocalDate birthDate,
         String address,
-        String phone
+        String phone,
+        String documentId
 )
 { }
