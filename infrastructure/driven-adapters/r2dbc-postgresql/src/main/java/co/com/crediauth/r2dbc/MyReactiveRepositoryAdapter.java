@@ -7,7 +7,9 @@ import co.com.crediauth.r2dbc.helper.ReactiveAdapterOperations;
 import co.com.crediauth.r2dbc.mapper.UserEntityMapper;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
+import org.springframework.transaction.reactive.TransactionalOperator;
 
 @Repository
 public class MyReactiveRepositoryAdapter extends ReactiveAdapterOperations<
@@ -16,18 +18,22 @@ public class MyReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         Long,
         MyReactiveRepository
         > implements UserRepository {
-    public MyReactiveRepositoryAdapter(MyReactiveRepository repository, ObjectMapper mapper) {
+    private final TransactionalOperator transactionalOperator;
+    public MyReactiveRepositoryAdapter(MyReactiveRepository repository, ObjectMapper mapper, TransactionalOperator transactionalOperator) {
 
         super(repository, mapper, d -> mapper.map(d, User.class/* change for domain model */));
+        this.transactionalOperator = transactionalOperator;
     }
+
 
 
     @Override
     public Mono<User> saveUser(User user) {
+
         UserEntity userEntity = UserEntityMapper.toEntity(user);
 
-        return repository.save(userEntity)
-                .map(UserEntityMapper::toUser);
+        return transactionalOperator.transactional(repository.save(userEntity)
+                .map(UserEntityMapper::toUser));
     }
 
 
