@@ -40,12 +40,16 @@ components:
           type: string
         phone:
           type: string
+        documentId:
+          type: string
       required: [names, lastNames, email, baseSalary, birthDate, address, phone]
 
     UserResponseDto:
       type: object
       properties:
         id:
+          type: string
+        rolId:
           type: string
         names:
           type: string
@@ -62,4 +66,8 @@ components:
           type: string
         phone:
           type: string
+        documentId:
+          type: string
       required: [id, names, lastNames, email, baseSalary, birthDate, address, phone]
+
+

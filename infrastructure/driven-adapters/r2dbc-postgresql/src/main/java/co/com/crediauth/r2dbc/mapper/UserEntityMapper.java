@@ -10,6 +10,7 @@ public class UserEntityMapper {
         if (user == null) return null;
 
         UserEntity entity = new UserEntity();
+        entity.setId(user.getId());
         entity.setNames(user.getNames());
         entity.setLastNames(user.getLastNames());
         entity.setEmail(user.getEmail());
@@ -24,6 +25,7 @@ public class UserEntityMapper {
     public static User toUser (UserEntity entity) {
         if (entity == null) return null;
         User user = new User();
+        user.setRolId(entity.getRolId());
         user.setId(entity.getId());
         user.setNames(entity.getNames());
         user.setLastNames(entity.getLastNames());

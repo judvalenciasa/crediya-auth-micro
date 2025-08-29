@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 public class User {
     private Long id;
+    private Long rolId;
     private String names;
     private String lastNames;
     private String email;
@@ -14,17 +15,11 @@ public class User {
     private String phone;
     private String documentId;
 
-    public String getDocumentId() {
-        return documentId;
-    }
-
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
-    }
 
     public User(){}
 
-    public User(String nombres, String lastNames, String email, Double baseSalary, LocalDate  birthDate, String address, String phone, String documentId) {
+    public User(Long rolId, String nombres, String lastNames, String email, Double baseSalary, LocalDate  birthDate, String address, String phone, String documentId) {
+        this.rolId = rolId;
         this.names = nombres;
         this.lastNames = lastNames;
         this.email = email;
@@ -34,6 +29,23 @@ public class User {
         this.phone = phone;
         this.documentId = documentId;
     }
+
+    public Long getRolId() {
+        return rolId;
+    }
+
+    public void setRolId(Long rolId) {
+        this.rolId = rolId;
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
+
 
     public Long getId() {
         return id;

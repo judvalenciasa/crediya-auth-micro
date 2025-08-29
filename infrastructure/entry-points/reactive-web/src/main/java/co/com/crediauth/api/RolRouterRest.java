@@ -1,28 +1,30 @@
 package co.com.crediauth.api;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
-@Configuration
-public class UserRouter {
+@Component
+public class RolRouterRest {
 
-    private final UserHandler userHandler;
+    private final RolHandler rolHandler;
 
-    public UserRouter(UserHandler userHandler) {
-        this.userHandler = userHandler;
+    public RolRouterRest(RolHandler rolHandler) {
+        this.rolHandler = rolHandler;
     }
 
     @Bean
     public RouterFunction<ServerResponse> userRoutes() {
         return route()
-                .POST("/users", userHandler::createUser)
-                .GET("/users/{documentNumber}", userHandler::existUserByDocumentNumber)
+                .POST("/rol", rolHandler::createRol)
+                .PUT("/rol/{documentNumber}", rolHandler::updateRol)
+                .GET("/rol/{documentNumber}", rolHandler::deleteRol)
+
                 .GET("/openapi/openapi.yaml", request ->
                         ServerResponse.ok()
                                 .contentType(MediaType.parseMediaType("application/yaml"))

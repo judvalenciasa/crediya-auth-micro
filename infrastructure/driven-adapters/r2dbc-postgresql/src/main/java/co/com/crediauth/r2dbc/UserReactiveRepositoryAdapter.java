@@ -9,17 +9,16 @@ import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
-import org.springframework.transaction.reactive.TransactionalOperator;
 
 @Repository
-public class MyReactiveRepositoryAdapter extends ReactiveAdapterOperations<
+public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         User,
         UserEntity,
         Long,
-        MyReactiveRepository
+        UserReactiveRepository
         > implements UserRepository {
     private final TransactionalOperator transactionalOperator;
-    public MyReactiveRepositoryAdapter(MyReactiveRepository repository, ObjectMapper mapper, TransactionalOperator transactionalOperator) {
+    public UserReactiveRepositoryAdapter(UserReactiveRepository repository, ObjectMapper mapper, TransactionalOperator transactionalOperator) {
 
         super(repository, mapper, d -> mapper.map(d, User.class/* change for domain model */));
         this.transactionalOperator = transactionalOperator;

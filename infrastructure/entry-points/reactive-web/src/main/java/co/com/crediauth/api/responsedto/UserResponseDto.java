@@ -12,6 +12,7 @@ public record UserResponseDto(
         LocalDate birthDate,
         String address,
         String phone,
-        String documentId
+        String documentId,
+        String rolId
 )
 { }

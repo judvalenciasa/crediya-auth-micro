@@ -1,7 +1,7 @@
 package co.com.crediauth.api.config;
 
-import co.com.crediauth.api.UserHandler;
-import co.com.crediauth.api.UserRouter;
+import co.com.crediauth.api.RolHandler;
+import co.com.crediauth.api.RolRouterRest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-@ContextConfiguration(classes = {UserRouter.class, UserHandler.class})
+@ContextConfiguration(classes = {RolRouterRest.class, RolHandler.class})
 @WebFluxTest
 @Import({CorsConfig.class, SecurityHeadersConfig.class})
 class ConfigTest {

@@ -2,12 +2,11 @@ package co.com.crediauth.api.handler;
 
 import co.com.crediauth.api.errordto.ErrorResponseDto;
 import co.com.crediauth.api.exception.ValidationException;
-import exceptions.BusinessException;
+import exception.AdminException;
+import exception.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -16,50 +15,44 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class GlobalExceptionHandler {
 
-    public Mono<ServerResponse> handleError(Throwable error) {
-
-        if (error instanceof BusinessException) {
-            return handleBusinessException((BusinessException) error);
-        } else if (error instanceof ValidationException) {
-            return handleCustomValidationException((ValidationException) error);
+    public Mono<ServerResponse> handleError(Throwable throwable) {
+        if (throwable instanceof ValidationException) {
+            return handleCustomValidationException((ValidationException) throwable);
+        } else if (throwable instanceof BusinessException) {
+            return handleBusinessException((BusinessException) throwable);
+        } else if (throwable instanceof AdminException) {
+            return handleAdminException((AdminException) throwable);
+        } else {
+            return handleGenericError(throwable);
         }
-
-        return handleGenericError(error);
-    }
-
-    private Mono<ServerResponse> handleBusinessException(BusinessException ex) {
-        ErrorResponseDto errorResponse = new ErrorResponseDto(
-                ex.getMessage(),
-                "BUS001",
-                LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
-        );
-        return ServerResponse
-                .status(HttpStatus.BAD_REQUEST)
-                .bodyValue(errorResponse);
     }
 
     private Mono<ServerResponse> handleCustomValidationException(ValidationException ex) {
         String message = ex.getErrors().getAllErrors().get(0).getDefaultMessage();
+        return buildErrorResponse(message, ErrorConstants.Codes.VALIDATION, HttpStatus.BAD_REQUEST);
+    }
 
-        ErrorResponseDto errorResponse = new ErrorResponseDto(
-                message,
-                "VAL002",
-                LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
-        );
-        return ServerResponse
-                .status(HttpStatus.BAD_REQUEST)
-                .bodyValue(errorResponse);
+    private Mono<ServerResponse> handleBusinessException(BusinessException ex) {
+        return buildErrorResponse(ex.getMessage(), ErrorConstants.Codes.BUSINESS, HttpStatus.BAD_REQUEST);
+    }
+
+    private Mono<ServerResponse> handleAdminException(AdminException ex) {
+        return buildErrorResponse(ex.getMessage(), ErrorConstants.Codes.ADMIN, HttpStatus.BAD_REQUEST);
     }
 
     private Mono<ServerResponse> handleGenericError(Throwable ex) {
+        String message = ErrorConstants.Messages.GENERIC_ERROR + ex.getMessage();
+        return buildErrorResponse(message, ErrorConstants.Codes.GENERIC, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private Mono<ServerResponse> buildErrorResponse(String message, String errorCode, HttpStatus status) {
         ErrorResponseDto errorResponse = new ErrorResponseDto(
-                "Ha ocurrido un error inesperado" + ex.getMessage(),
-                "GEN001",
+                message,
+                errorCode,
                 LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
         );
         return ServerResponse
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(status)
                 .bodyValue(errorResponse);
     }
-
 }

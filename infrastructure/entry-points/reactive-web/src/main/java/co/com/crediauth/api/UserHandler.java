@@ -25,6 +25,7 @@ public class UserHandler {
     private final InterfaceUserUseCase interfaceUserUseCase;
     private final UserMapper userMapper;
     private final GlobalExceptionHandler exceptionHandler;
+
     private final Validator validator;
 
     public Mono<ServerResponse> createUser(ServerRequest serverRequest) {
@@ -40,36 +41,16 @@ public class UserHandler {
                     return interfaceUserUseCase.saveUser(userMapper.toEntity(dto));
                 })
                 .map(userMapper::toDto)
-                .flatMap(userResponse ->
-                        ServerResponse.ok()
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(userResponse)
-                )
+                .flatMap(userResponse -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(userResponse))
                 .onErrorResume(exceptionHandler::handleError);
-
     }
+
+
 
     public Mono<ServerResponse> existUserByDocumentNumber(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(UserRequestDto.class)
-                .flatMap(dto -> {
-                    Errors errors = new BeanPropertyBindingResult(dto, UserRequestDto.class.getName());
-                    validator.validate(dto, errors);
-
-                    if (errors.hasErrors()) {
-                        return Mono.error(new ValidationException(errors));
-                    }
-
-                    return interfaceUserUseCase.saveUser(userMapper.toEntity(dto));
-                })
-                .map(userMapper::toDto)
-                .flatMap(userResponse ->
-                        ServerResponse.ok()
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(userResponse)
-                )
-                .onErrorResume(exceptionHandler::handleError);
-
+        return null;
     }
-
 
 }

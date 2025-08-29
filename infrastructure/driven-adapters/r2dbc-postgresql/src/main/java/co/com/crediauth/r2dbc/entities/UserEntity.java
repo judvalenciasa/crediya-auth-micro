@@ -15,6 +15,9 @@ public class UserEntity {
     @Id
     private Long id;
 
+    @Column("id_rol")
+    private Long rolId;
+
     @Column("nombre")
     private String names;
 
