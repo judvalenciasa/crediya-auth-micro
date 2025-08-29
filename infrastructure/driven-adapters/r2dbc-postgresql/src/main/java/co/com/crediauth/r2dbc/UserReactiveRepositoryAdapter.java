@@ -5,6 +5,7 @@ import co.com.crediauth.model.user.gateways.UserRepository;
 import co.com.crediauth.r2dbc.entities.UserEntity;
 import co.com.crediauth.r2dbc.helper.ReactiveAdapterOperations;
 import co.com.crediauth.r2dbc.mapper.UserEntityMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.reactive.TransactionalOperator;
