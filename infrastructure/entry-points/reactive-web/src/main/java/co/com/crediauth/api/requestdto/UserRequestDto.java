@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public record UserRequestDto(
         @NotBlank(message = "Names cannot be empty")

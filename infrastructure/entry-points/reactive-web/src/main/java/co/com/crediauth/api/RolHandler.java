@@ -15,7 +15,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-
 @Component
 @RequiredArgsConstructor
 public class RolHandler {
@@ -25,7 +24,6 @@ public class RolHandler {
     private final RolMapper rolMapper;
     private final GlobalExceptionHandler exceptionHandler;
 
-    private final Validator validator;
 
     public Mono<ServerResponse> createRol(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(RolUpdateRequestDto.class)

@@ -1,5 +1,6 @@
 package co.com.crediauth.api;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
@@ -14,16 +15,27 @@ public class RolRouterRest {
 
     private final RolHandler rolHandler;
 
+    @Value("${api.base-path:api}")
+    private String apiBasePath;
+
+    @Value("${api.version:1}")
+    private String apiVersion;
+
+    @Value("${api.endpoints.roles:roles}")
+    private String apiEndpointRoles;
+
     public RolRouterRest(RolHandler rolHandler) {
         this.rolHandler = rolHandler;
     }
 
     @Bean
-    public RouterFunction<ServerResponse> userRoutes() {
+    public RouterFunction<ServerResponse> rolRoutes() {
+        String basePath = "/" + apiBasePath + "/v" + apiVersion + "/" + apiEndpointRoles;
+        
         return route()
-                .POST("/rol", rolHandler::createRol)
-                .PUT("/rol/{documentNumber}", rolHandler::updateRol)
-                .GET("/rol/{documentNumber}", rolHandler::deleteRol)
+                .POST(basePath, rolHandler::createRol)
+                .PUT(basePath, rolHandler::updateRol)
+                .DELETE(basePath + "/{idRol}", rolHandler::deleteRol)
 
                 .GET("/openapi/openapi.yaml", request ->
                         ServerResponse.ok()

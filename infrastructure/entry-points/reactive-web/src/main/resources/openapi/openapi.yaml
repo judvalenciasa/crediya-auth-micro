@@ -1,73 +1,369 @@
 openapi: 3.0.1
 info:
   title: CrediAuth API
-  description: Documentación de la API
+  description: API de autenticación y autorización para el sistema CrediAuth. Proporciona endpoints para gestión de usuarios y roles usando WebFlux.
   version: "1.0"
+  contact:
+    name: Equipo de Desarrollo
+    email: desarrollo@crediauth.com
+    url: https://crediauth.com
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: ${API_SERVER_DEV}
+    description: Servidor de desarrollo
+  - url: ${API_SERVER_PROD}
+    description: Servidor de producción
+
 paths:
-  /users:
+  # User endpoints
+  /${API_BASE_PATH}/v${API_VERSION}/${API_ENDPOINT_USERS}:
     post:
+      tags:
+        - User Management
       summary: Crear usuario
+      description: Crea un nuevo usuario en el sistema
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/UserRequestDto'
+            example:
+              names: "Juan Carlos"
+              lastNames: "Pérez García"
+              email: "juan.perez@email.com"
+              baseSalary: 2500000.0
+              birthDate: "1990-05-15"
+              address: "Calle 123 #45-67"
+              phone: "+573001234567"
+              documentId: "12345678"
       responses:
-        '201':
-          description: Usuario creado
+        '200':
+          description: Usuario creado exitosamente
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponseDto'
+        '400':
+          description: Datos de entrada inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
+  /${API_BASE_PATH}/v${API_VERSION}/${API_ENDPOINT_USERS}/{documentNumber}:
+    get:
+      tags:
+        - User Management
+      summary: Verificar existencia de usuario
+      description: Verifica si existe un usuario por número de documento
+      parameters:
+        - name: documentNumber
+          in: path
+          required: true
+          description: Número de documento del usuario
+          schema:
+            type: string
+          example: "12345678"
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
+  # Role endpoints
+  /${API_BASE_PATH}/v${API_VERSION}/${API_ENDPOINT_ROLES}:
+    post:
+      tags:
+        - Role Management
+      summary: Crear rol
+      description: Crea un nuevo rol en el sistema
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RolRequestDto'
+            example:
+              name: "ADMIN"
+              description: "Rol de administrador del sistema"
+      responses:
+        '200':
+          description: Rol creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolResponseDto'
+        '400':
+          description: Datos de entrada inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
+    put:
+      tags:
+        - Role Management
+      summary: Actualizar rol
+      description: Actualiza un rol existente en el sistema
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RolUpdateRequestDto'
+            example:
+              idRol: 1
+              name: "ADMIN"
+              description: "Rol de administrador del sistema actualizado"
+      responses:
+        '200':
+          description: Rol actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolResponseDto'
+        '404':
+          description: Rol no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
+  /${API_BASE_PATH}/v${API_VERSION}/${API_ENDPOINT_ROLES}/{idRol}:
+    delete:
+      tags:
+        - Role Management
+      summary: Eliminar rol
+      description: Elimina un rol del sistema
+      parameters:
+        - name: idRol
+          in: path
+          required: true
+          description: ID del rol a eliminar
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        '204':
+          description: Rol eliminado exitosamente
+        '404':
+          description: Rol no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
 components:
   schemas:
+    # User schemas
     UserRequestDto:
       type: object
+      required:
+        - names
+        - lastNames
+        - email
+        - baseSalary
+        - documentId
       properties:
         names:
           type: string
+          description: Nombres del usuario
+          example: "Juan Carlos"
+          minLength: 1
         lastNames:
           type: string
+          description: Apellidos del usuario
+          example: "Pérez García"
+          minLength: 1
         email:
           type: string
+          format: email
+          description: Email del usuario
+          example: "juan.perez@email.com"
         baseSalary:
           type: number
+          format: double
+          description: Salario base del usuario
+          example: 2500000.0
+          minimum: 0
+          maximum: 15000000
         birthDate:
           type: string
           format: date
+          description: Fecha de nacimiento
+          example: "1990-05-15"
         address:
           type: string
+          description: Dirección del usuario
+          example: "Calle 123 #45-67"
         phone:
           type: string
+          description: Teléfono del usuario
+          example: "+573001234567"
         documentId:
           type: string
-      required: [names, lastNames, email, baseSalary, birthDate, address, phone]
+          description: Número de documento de identidad
+          example: "12345678"
+          minLength: 1
 
     UserResponseDto:
       type: object
+      required:
+        - id
+        - names
+        - lastNames
+        - email
+        - baseSalary
+        - documentId
       properties:
         id:
           type: string
-        rolId:
-          type: string
+          description: ID único del usuario
+          example: "1"
         names:
           type: string
+          description: Nombres del usuario
+          example: "Juan Carlos"
         lastNames:
           type: string
+          description: Apellidos del usuario
+          example: "Pérez García"
         email:
           type: string
+          format: email
+          description: Email del usuario
+          example: "juan.perez@email.com"
         baseSalary:
           type: number
+          format: double
+          description: Salario base del usuario
+          example: 2500000.0
         birthDate:
           type: string
           format: date
+          description: Fecha de nacimiento
+          example: "1990-05-15"
         address:
           type: string
+          description: Dirección del usuario
+          example: "Calle 123 #45-67"
         phone:
           type: string
+          description: Teléfono del usuario
+          example: "+573001234567"
         documentId:
           type: string
-      required: [id, names, lastNames, email, baseSalary, birthDate, address, phone]
+          description: Número de documento de identidad
+          example: "12345678"
+        rolId:
+          type: string
+          description: ID del rol asignado
+          example: "1"
 
+    # Role schemas
+    RolRequestDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Nombre del rol
+          example: "ADMIN"
+          minLength: 2
+          maxLength: 50
+        description:
+          type: string
+          description: Descripción del rol
+          example: "Rol de administrador del sistema"
+          maxLength: 200
 
+    RolUpdateRequestDto:
+      type: object
+      required:
+        - idRol
+        - name
+      properties:
+        idRol:
+          type: integer
+          format: int64
+          description: ID del rol a actualizar
+          example: 1
+        name:
+          type: string
+          description: Nombre del rol
+          example: "ADMIN"
+          minLength: 2
+          maxLength: 50
+        description:
+          type: string
+          description: Descripción del rol
+          example: "Rol de administrador del sistema actualizado"
+          maxLength: 200
+
+    RolResponseDto:
+      type: object
+      required:
+        - idRol
+        - name
+      properties:
+        idRol:
+          type: integer
+          format: int64
+          description: ID del rol
+          example: 1
+        name:
+          type: string
+          description: Nombre del rol
+          example: "ADMIN"
+        description:
+          type: string
+          description: Descripción del rol
+          example: "Rol de administrador del sistema"
+
+    # Error schema
+    ErrorResponseDto:
+      type: object
+      required:
+        - message
+        - errorCode
+        - timestamp
+      properties:
+        message:
+          type: string
+          description: Mensaje de error
+          example: "Datos de entrada inválidos"
+        errorCode:
+          type: string
+          description: Código de error
+          example: "VAL002"
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp del error
+          example: "2025-08-29T08:30:00"
+
+tags:
+  - name: User Management
+    description: APIs para gestión de usuarios
+  - name: Role Management
+    description: APIs para gestión de roles
