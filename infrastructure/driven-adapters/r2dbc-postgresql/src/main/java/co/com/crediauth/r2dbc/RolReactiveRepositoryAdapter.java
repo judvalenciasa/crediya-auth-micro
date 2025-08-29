@@ -5,11 +5,9 @@ import co.com.crediauth.model.rol.gateways.RolRepository;
 import co.com.crediauth.r2dbc.entities.RolEntity;
 import co.com.crediauth.r2dbc.exception.HandleDatabaseError;
 import co.com.crediauth.r2dbc.helper.ReactiveAdapterOperations;
-import io.r2dbc.spi.R2dbcDataIntegrityViolationException;
 import org.reactivecommons.utils.ObjectMapper;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 
 @Repository
@@ -19,10 +17,11 @@ public class RolReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         Long,
         RolReactiveRepository
 > implements RolRepository {
-
-    public RolReactiveRepositoryAdapter(RolReactiveRepository repository, ObjectMapper mapper) {
+    private final TransactionalOperator transactionalOperator;
+    public RolReactiveRepositoryAdapter(RolReactiveRepository repository, ObjectMapper mapper,TransactionalOperator transactionalOperator) {
 
         super(repository, mapper, d -> mapper.map(d, Rol.class/* change for domain model */));
+        this.transactionalOperator = transactionalOperator;
     }
 
     @Override
@@ -33,16 +32,16 @@ public class RolReactiveRepositoryAdapter extends ReactiveAdapterOperations<
 
     @Override
     public Mono<Rol> saveRol(Rol rol) {
-        return save(rol)
-                .onErrorMap(error -> new HandleDatabaseError("Error guardando rol: " + error.getMessage()));
+        return transactionalOperator.transactional(save(rol)
+                .onErrorMap(error -> new HandleDatabaseError("Error guardando rol: " + error.getMessage())));
     }
 
     @Override
     public Mono<Void> deleteRol(Long idRol) {
-        return repository.findById(idRol)
+        return transactionalOperator.transactional(repository.findById(idRol)
                 .flatMap(rolEntity -> repository.deleteById(idRol))
                 .onErrorMap(error -> new HandleDatabaseError("Error eliminando rol: " + error.getMessage()))
-                .then();
+                .then());
     }
 
     @Override
@@ -52,8 +51,8 @@ public class RolReactiveRepositoryAdapter extends ReactiveAdapterOperations<
 
     @Override
     public Mono<Rol> getRolByName(String name) {
-        return repository.findByName(name)
+        return transactionalOperator.transactional(repository.findByName(name)
                 .map(this::toEntity)
-                .onErrorMap(error -> new HandleDatabaseError("Error buscando rol por nombre: " + error.getMessage()));
+                .onErrorMap(error -> new HandleDatabaseError("Error buscando rol por nombre: " + error.getMessage())));
     }
 }
