@@ -6,14 +6,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserEntityMapper {
-    final static  Long ROL_ID_DEFAULT = 1L;
 
     public static UserEntity toEntity(User user) {
         if (user == null) return null;
 
         UserEntity entity = new UserEntity();
         entity.setId(user.getId());
-        entity.setRolId(ROL_ID_DEFAULT);
+        entity.setRolId(user.getRolId());
         entity.setNames(user.getNames());
         entity.setLastNames(user.getLastNames());
         entity.setEmail(user.getEmail());

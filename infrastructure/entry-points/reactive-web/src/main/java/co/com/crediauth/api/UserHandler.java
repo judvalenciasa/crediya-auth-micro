@@ -3,7 +3,7 @@ package co.com.crediauth.api;
 import co.com.crediauth.api.exception.ValidationException;
 import co.com.crediauth.api.globalerror.GlobalExceptionHandler;
 import co.com.crediauth.api.mapper.UserMapper;
-import co.com.crediauth.api.requestdto.UserRequestDto;
+import co.com.crediauth.api.requestdto.user.UserCreateRequestDto;
 import co.com.crediauth.usecase.user.InterfaceUserUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -31,9 +31,9 @@ public class UserHandler {
 
     public Mono<ServerResponse> createUser(ServerRequest serverRequest) {
         log.info("event=USER_CREATION_INITIATED");
-        return serverRequest.bodyToMono(UserRequestDto.class)
+        return serverRequest.bodyToMono(UserCreateRequestDto.class)
                 .flatMap(dto -> {
-                    Errors errors = new BeanPropertyBindingResult(dto, UserRequestDto.class.getName());
+                    Errors errors = new BeanPropertyBindingResult(dto, UserCreateRequestDto.class.getName());
                     validator.validate(dto, errors);
 
                     if (errors.hasErrors()) {

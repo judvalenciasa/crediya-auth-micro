@@ -8,4 +8,5 @@ public interface RolRepository {
     Mono<Rol> saveRol(Rol rol);
     Mono<Void> deleteRol(Long idRol);
     Mono<Void> getRolById(Long idRol);
+    Mono<Rol> getRolByName(String name);
 }

@@ -1,9 +1,8 @@
-package co.com.crediauth.api.responsedto;
+package co.com.crediauth.api.responsedto.user;
 
 import java.time.LocalDate;
 
 public record UserResponseDto(
-
         String id,
         String names,
         String lastNames,

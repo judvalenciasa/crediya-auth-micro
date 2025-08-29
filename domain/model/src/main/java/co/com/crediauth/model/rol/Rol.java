@@ -5,8 +5,10 @@ public class Rol {
     private String name;
     private String description;
 
-    public Rol(Long idRol,String name, String description) {
-        this.idRol = idRol;
+    public Rol() {
+    }
+
+    public Rol(String name, String description) {
         this.name = name;
         this.description = description;
     }

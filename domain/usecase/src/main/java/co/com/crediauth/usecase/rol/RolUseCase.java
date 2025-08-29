@@ -39,4 +39,6 @@ public class RolUseCase implements IRolUseCase{
                     }
                 });
     }
+
+    
 }

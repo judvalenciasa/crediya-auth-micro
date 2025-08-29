@@ -1,9 +1,9 @@
-package co.com.crediauth.api.requestdto;
+package co.com.crediauth.api.requestdto.rol;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record RolRequestDto(
+public record RolCreateRequestDto(
         @NotBlank(message = "El nombre del rol no puede estar vacío")
         @Size(min = 2, max = 50, message = "El nombre del rol debe tener entre 2 y 50 caracteres")
         String name,

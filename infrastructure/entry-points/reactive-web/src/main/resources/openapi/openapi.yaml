@@ -1,15 +1,11 @@
-openapi: 3.0.1
+openapi: 3.0.3
 info:
   title: CrediAuth API
-  description: API de autenticación y autorización para el sistema CrediAuth. Proporciona endpoints para gestión de usuarios y roles usando WebFlux.
-  version: "1.0"
+  description: API para gestión de usuarios y roles
+  version: 1.0.0
   contact:
-    name: Equipo de Desarrollo
-    email: desarrollo@crediauth.com
-    url: https://crediauth.com
-  license:
-    name: MIT License
-    url: https://opensource.org/licenses/MIT
+    name: CrediAuth Team
+    email: support@crediauth.com
 
 servers:
   - url: http://localhost:8082
@@ -30,7 +26,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRequestDto'
+              $ref: '#/components/schemas/UserCreateRequestDto'
             example:
               names: "Juan Carlos"
               lastNames: "Pérez García"
@@ -53,8 +49,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
-        '500':
-          description: Error interno del servidor
+        '409':
+          description: Email ya existe
           content:
             application/json:
               schema:
@@ -100,9 +96,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RolUpdateRequestDto'
+              $ref: '#/components/schemas/RolCreateRequestDto'
             example:
-              idRol: 1
               name: "ADMIN"
               description: "Rol de administrador del sistema"
       responses:
@@ -114,6 +109,12 @@ paths:
                 $ref: '#/components/schemas/RolResponseDto'
         '400':
           description: Datos de entrada inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+        '409':
+          description: Rol ya existe
           content:
             application/json:
               schema:
@@ -141,6 +142,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RolResponseDto'
+        '400':
+          description: Datos de entrada inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
         '404':
           description: Rol no encontrado
           content:
@@ -173,25 +180,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
 
-  # OpenAPI documentation endpoint
-  /openapi/openapi.yaml:
-    get:
-      tags:
-        - Documentation
-      summary: Obtener documentación OpenAPI
-      description: Retorna la especificación OpenAPI en formato YAML
-      responses:
-        '200':
-          description: Documentación OpenAPI
-          content:
-            application/yaml:
-              schema:
-                type: string
-
 components:
   schemas:
     # User schemas
-    UserRequestDto:
+    UserCreateRequestDto:
       type: object
       required:
         - names
@@ -296,7 +288,7 @@ components:
           example: "1"
 
     # Role schemas
-    RolRequestDto:
+    RolCreateRequestDto:
       type: object
       required:
         - name
@@ -361,14 +353,14 @@ components:
       type: object
       required:
         - message
-        - errorCode
+        - code
         - timestamp
       properties:
         message:
           type: string
           description: Mensaje de error
           example: "Datos de entrada inválidos"
-        errorCode:
+        code:
           type: string
           description: Código de error
           example: "VAL002"

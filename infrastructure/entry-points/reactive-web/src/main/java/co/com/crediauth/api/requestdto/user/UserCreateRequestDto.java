@@ -1,11 +1,11 @@
-package co.com.crediauth.api.requestdto;
+package co.com.crediauth.api.requestdto.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
-public record UserRequestDto(
+public record UserCreateRequestDto(
         @NotBlank(message = "Names cannot be empty")
         String names,
 

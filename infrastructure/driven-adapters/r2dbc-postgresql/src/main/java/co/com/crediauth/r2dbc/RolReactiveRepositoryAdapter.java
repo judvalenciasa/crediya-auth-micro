@@ -3,8 +3,12 @@ package co.com.crediauth.r2dbc;
 import co.com.crediauth.model.rol.Rol;
 import co.com.crediauth.model.rol.gateways.RolRepository;
 import co.com.crediauth.r2dbc.entities.RolEntity;
+import co.com.crediauth.r2dbc.exception.HandleDatabaseError;
 import co.com.crediauth.r2dbc.helper.ReactiveAdapterOperations;
+import io.r2dbc.spi.R2dbcDataIntegrityViolationException;
 import org.reactivecommons.utils.ObjectMapper;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
@@ -15,6 +19,7 @@ public class RolReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         Long,
         RolReactiveRepository
 > implements RolRepository {
+
     public RolReactiveRepositoryAdapter(RolReactiveRepository repository, ObjectMapper mapper) {
 
         super(repository, mapper, d -> mapper.map(d, Rol.class/* change for domain model */));
@@ -22,21 +27,33 @@ public class RolReactiveRepositoryAdapter extends ReactiveAdapterOperations<
 
     @Override
     public Mono<Boolean> existsByidRol(Long idRol) {
-        return repository.existsById(idRol);
+        return repository.existsById(idRol)
+                .onErrorMap(error -> new HandleDatabaseError("Error verificando rol: " + error.getMessage()));
     }
 
     @Override
     public Mono<Rol> saveRol(Rol rol) {
-        return save(rol);
+        return save(rol)
+                .onErrorMap(error -> new HandleDatabaseError("Error guardando rol: " + error.getMessage()));
     }
 
     @Override
     public Mono<Void> deleteRol(Long idRol) {
-        return null;
+        return repository.findById(idRol)
+                .flatMap(rolEntity -> repository.deleteById(idRol))
+                .onErrorMap(error -> new HandleDatabaseError("Error eliminando rol: " + error.getMessage()))
+                .then();
     }
 
     @Override
     public Mono<Void> getRolById(Long idRol) {
-        return getRolById(idRol);
+        return null;
+    }
+
+    @Override
+    public Mono<Rol> getRolByName(String name) {
+        return repository.findByName(name)
+                .map(this::toEntity)
+                .onErrorMap(error -> new HandleDatabaseError("Error buscando rol por nombre: " + error.getMessage()));
     }
 }
