@@ -1,7 +1,12 @@
 package co.com.crediauth.model.user;
 
 
+import co.com.crediauth.model.rol.Rol;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class User {
     private Long id;
@@ -15,11 +20,10 @@ public class User {
     private String phone;
     private String documentId;
 
+    public User() {
+    }
 
-    public User(){}
-
-    public User(Long rolId, String nombres, String lastNames, String email, Double baseSalary, LocalDate  birthDate, String address, String phone, String documentId) {
-        this.rolId = rolId;
+    public User(String nombres, String lastNames, String email, Double baseSalary, LocalDate  birthDate, String address, String phone, String documentId) {
         this.names = nombres;
         this.lastNames = lastNames;
         this.email = email;

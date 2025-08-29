@@ -7,4 +7,5 @@ public interface RolRepository {
     Mono<Boolean> existsByidRol(Long idRol);
     Mono<Rol> saveRol(Rol rol);
     Mono<Void> deleteRol(Long idRol);
+    Mono<Void> getRolById(Long idRol);
 }

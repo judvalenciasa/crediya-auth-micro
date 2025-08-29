@@ -37,13 +37,6 @@ springdoc:
     path: /api-docs
   packages-to-scan: co.com.crediauth.api
 
-# Configuración de la API
 api:
-  base-path: api
-  version: 1
-  endpoints:
-    users: usuarios
-    roles: roles
-  server:
-    development: http://localhost:8082
-    production: https://api.crediauth.com
+  base-path: "/api"
+  version: "/v1"

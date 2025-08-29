@@ -8,7 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-@ContextConfiguration(classes = {UserRouterRest.class, UserHandler.class})
+@ContextConfiguration(classes = {RouterRest.class, UserHandler.class})
 @WebFluxTest
 class UserRolRouterRestTest {
 

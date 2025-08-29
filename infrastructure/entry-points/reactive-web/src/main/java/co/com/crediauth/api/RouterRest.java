@@ -11,30 +11,46 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Component
-public class UserRouterRest {
+public class RouterRest {
 
     private final UserHandler userHandler;
+    private final RolHandler rolHandler;
 
-    @Value("${api.base-path:api}")
+    @Value("${api.base-path:/api}")
     private String apiBasePath;
 
-    @Value("${api.version:1}")
+    @Value("${api.version:/v1}")
     private String apiVersion;
 
-    @Value("${api.endpoints.users:usuarios}")
-    private String apiEndpointUsers;
-
-    public UserRouterRest(UserHandler userHandler) {
+    public RouterRest(UserHandler userHandler, RolHandler rolHandler) {
         this.userHandler = userHandler;
+        this.rolHandler = rolHandler;
     }
 
     @Bean
     public RouterFunction<ServerResponse> userRoutes() {
-        String basePath = "/" + apiBasePath + "/v" + apiVersion + "/" + apiEndpointUsers;
+        String basePath = apiBasePath + apiVersion + "/users";
         
         return route()
                 .POST(basePath, userHandler::createUser)
                 .GET(basePath + "/{documentNumber}", userHandler::existUserByDocumentNumber)
+
+                .GET("/openapi/openapi.yaml", request ->
+                        ServerResponse.ok()
+                                .contentType(MediaType.parseMediaType("application/yaml"))
+                                .bodyValue(new ClassPathResource("openapi/openapi.yaml"))
+                )
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> rolRoutes() {
+        String basePath =  apiBasePath + apiVersion + "/roles";
+
+        return route()
+                .POST(basePath, rolHandler::createRol)
+                .PUT(basePath, rolHandler::updateRol)
+                .DELETE(basePath + "/{idRol}", rolHandler::deleteRol)
 
                 .GET("/openapi/openapi.yaml", request ->
                         ServerResponse.ok()

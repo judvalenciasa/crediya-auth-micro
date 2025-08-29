@@ -12,14 +12,14 @@ info:
     url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: ${API_SERVER_DEV}
+  - url: http://localhost:8082
     description: Servidor de desarrollo
-  - url: ${API_SERVER_PROD}
+  - url: https://api.crediauth.com
     description: Servidor de producción
 
 paths:
   # User endpoints
-  /${API_BASE_PATH}/v${API_VERSION}/${API_ENDPOINT_USERS}:
+  /api/v1/users:
     post:
       tags:
         - User Management
@@ -60,7 +60,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
 
-  /${API_BASE_PATH}/v${API_VERSION}/${API_ENDPOINT_USERS}/{documentNumber}:
+  /api/v1/users/{documentNumber}:
     get:
       tags:
         - User Management
@@ -89,7 +89,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseDto'
 
   # Role endpoints
-  /${API_BASE_PATH}/v${API_VERSION}/${API_ENDPOINT_ROLES}:
+  /api/v1/roles:
     post:
       tags:
         - Role Management
@@ -100,8 +100,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RolRequestDto'
+              $ref: '#/components/schemas/RolUpdateRequestDto'
             example:
+              idRol: 1
               name: "ADMIN"
               description: "Rol de administrador del sistema"
       responses:
@@ -147,7 +148,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
 
-  /${API_BASE_PATH}/v${API_VERSION}/${API_ENDPOINT_ROLES}/{idRol}:
+  /api/v1/roles/{idRol}:
     delete:
       tags:
         - Role Management
@@ -171,6 +172,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
+
+  # OpenAPI documentation endpoint
+  /openapi/openapi.yaml:
+    get:
+      tags:
+        - Documentation
+      summary: Obtener documentación OpenAPI
+      description: Retorna la especificación OpenAPI en formato YAML
+      responses:
+        '200':
+          description: Documentación OpenAPI
+          content:
+            application/yaml:
+              schema:
+                type: string
 
 components:
   schemas:

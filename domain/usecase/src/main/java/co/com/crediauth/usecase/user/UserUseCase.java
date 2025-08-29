@@ -1,5 +1,6 @@
 package co.com.crediauth.usecase.user;
 
+import co.com.crediauth.model.rol.Rol;
 import co.com.crediauth.model.rol.gateways.RolRepository;
 import co.com.crediauth.model.user.User;
 import co.com.crediauth.model.user.gateways.UserRepository;
@@ -11,7 +12,7 @@ import reactor.core.publisher.Mono;
 public class UserUseCase implements InterfaceUserUseCase {
     private final UserRepository userRepository;
     private final RolRepository rolRepository;
-    final static  Long ROL_ID_DEFAULT = 1l;
+
     final static  double SALARY_BASE_PERMITED = 15000000;
 
     @Override
@@ -19,9 +20,8 @@ public class UserUseCase implements InterfaceUserUseCase {
         return Mono.when(
                 validateEmailNotExists(user.getEmail()),
                 validateSalary(user.getBaseSalary()),
-                validateRoleExists(ROL_ID_DEFAULT)
+                validateRoleExists(user.getRolId())
         ).then(Mono.defer(() -> {
-            user.setRolId(ROL_ID_DEFAULT);
             return userRepository.saveUser(user);
         }));
     }

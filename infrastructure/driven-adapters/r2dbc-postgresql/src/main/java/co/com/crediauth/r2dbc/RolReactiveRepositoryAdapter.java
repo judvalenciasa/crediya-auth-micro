@@ -34,4 +34,9 @@ public class RolReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     public Mono<Void> deleteRol(Long idRol) {
         return null;
     }
+
+    @Override
+    public Mono<Void> getRolById(Long idRol) {
+        return getRolById(idRol);
+    }
 }

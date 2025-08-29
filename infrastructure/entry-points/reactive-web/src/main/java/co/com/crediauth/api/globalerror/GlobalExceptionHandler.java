@@ -1,4 +1,4 @@
-package co.com.crediauth.api.handler;
+package co.com.crediauth.api.globalerror;
 
 import co.com.crediauth.api.errordto.ErrorResponseDto;
 import co.com.crediauth.api.exception.ValidationException;

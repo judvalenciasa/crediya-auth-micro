@@ -1,7 +1,7 @@
 package co.com.crediauth.api;
 
 import co.com.crediauth.api.exception.ValidationException;
-import co.com.crediauth.api.handler.GlobalExceptionHandler;
+import co.com.crediauth.api.globalerror.GlobalExceptionHandler;
 import co.com.crediauth.api.mapper.RolMapper;
 import co.com.crediauth.api.requestdto.RolUpdateRequestDto;
 import co.com.crediauth.usecase.rol.IRolUseCase;

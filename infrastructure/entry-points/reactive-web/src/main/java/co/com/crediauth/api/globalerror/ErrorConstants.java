@@ -1,4 +1,4 @@
-package co.com.crediauth.api.handler;
+package co.com.crediauth.api.globalerror;
 
 public final class ErrorConstants {
 
