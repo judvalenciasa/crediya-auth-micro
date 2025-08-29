@@ -1,10 +1,11 @@
 package co.com.crediauth.api.requestdto.rol;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record RolUpdateRequestDto(
-        @NotBlank(message = "The name of the role cannot be empty")
+        @NotNull(message = "The name of the role cannot be empty")
         Long idRol,
 
         @NotBlank(message = "The name of the role is required")
