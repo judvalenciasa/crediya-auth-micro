@@ -27,6 +27,7 @@ public record UserRequestDto(
         String address,
         String phone,
 
+        @NotBlank(message = "Document type cannot be empty")
         String documentId
 ) {
 }

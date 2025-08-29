@@ -22,6 +22,7 @@ public class UserRouter {
     public RouterFunction<ServerResponse> userRoutes() {
         return route()
                 .POST("/users", userHandler::createUser)
+                .GET("/users/{documentNumber}", userHandler::existUserByDocumentNumber)
                 .GET("/openapi/openapi.yaml", request ->
                         ServerResponse.ok()
                                 .contentType(MediaType.parseMediaType("application/yaml"))
