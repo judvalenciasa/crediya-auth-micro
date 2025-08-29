@@ -4,6 +4,7 @@ import co.com.crediauth.api.exception.ValidationException;
 import co.com.crediauth.api.globalerror.GlobalExceptionHandler;
 import co.com.crediauth.api.mapper.UserMapper;
 import co.com.crediauth.api.requestdto.user.UserCreateRequestDto;
+import co.com.crediauth.api.responsedto.user.UserExistResponseDto;
 import co.com.crediauth.usecase.user.InterfaceUserUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -16,6 +17,8 @@ import reactor.core.publisher.Mono;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
 
 
 @Slf4j
@@ -55,7 +58,25 @@ public class UserHandler {
 
 
     public Mono<ServerResponse> existUserByDocumentNumber(ServerRequest serverRequest) {
-        return null;
+        String documentNumber = serverRequest.pathVariable("documentNumber");
+        log.info("event=USER_EXISTENCE_CHECK_INITIATED, documentNumber={}", documentNumber);
+
+        return interfaceUserUseCase.existsByDocumentId(documentNumber)
+                .doOnNext(exists -> log.info("event=USER_EXISTENCE_CHECK_RESULT, documentNumber={}, exists={}", documentNumber, exists))
+                .map(exists -> Map.of(
+                        "exists", exists,
+                        "documentNumber", documentNumber,
+                        "message", exists ? "Usuario encontrado" : "Usuario no encontrado"
+                ))
+                .doOnNext(response -> log.info("event=USER_EXISTENCE_RESPONSE_GENERATED, response={}", response))
+                .flatMap(response -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(response))
+                .doOnSuccess(response -> log.info("event=USER_EXISTENCE_CHECK_COMPLETED, documentNumber={}", documentNumber))
+                .onErrorResume(throwable -> {
+                    log.error("event=USER_EXISTENCE_CHECK_ERROR, documentNumber={}, error={}", documentNumber, throwable.getMessage(), throwable);
+                    return exceptionHandler.handleError(throwable);
+                });
     }
 
 }

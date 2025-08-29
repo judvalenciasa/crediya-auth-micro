@@ -6,5 +6,5 @@ import reactor.core.publisher.Mono;
 public interface InterfaceUserUseCase {
 
     Mono<User> saveUser(User user) ;
-
+    Mono<Boolean> existsByDocumentId(String documentId);
 }

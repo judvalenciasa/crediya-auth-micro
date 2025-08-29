@@ -7,4 +7,5 @@ public interface IRolUseCase {
     Mono<Rol> createRol(Rol rol);
     Mono<Rol> updateRol(Rol rol);
     Mono<Void> deleteRol(Long idRol);
+
 }
