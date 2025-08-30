@@ -43,6 +43,7 @@ class UserUseCaseTest {
         user.setAddress("Calle 65 H 39-57");
         user.setPhone("3214567890");
         user.setDocumentId("125458522");
+        user.setRolId(11L);
 
         // When
         when(userRepository.existsByEmail("juan@gmail.com")).thenReturn(Mono.just(false));
@@ -61,7 +62,8 @@ class UserUseCaseTest {
                                 savedUser.getBirthDate().equals(LocalDate.parse("1995-05-09")) &&
                                 savedUser.getAddress().equals("Calle 65 H 39-57") &&
                                 savedUser.getPhone().equals("3214567890") &&
-                                savedUser.getDocumentId().equals("125458522")
+                                savedUser.getDocumentId().equals("125458522") &&
+                                savedUser.getRolId().equals(11L)
                 )
                 .verifyComplete();
 

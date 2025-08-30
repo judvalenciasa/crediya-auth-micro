@@ -9,5 +9,6 @@ public interface UserRepository {
     Mono<Boolean> existsByEmail(String email);
     Mono<Boolean> existsByDocumentId(String documentId);
 
+
 }
 

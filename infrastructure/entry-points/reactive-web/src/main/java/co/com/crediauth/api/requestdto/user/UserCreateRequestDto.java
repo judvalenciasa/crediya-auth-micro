@@ -29,7 +29,7 @@ public record UserCreateRequestDto(
         @NotBlank(message = "Document type cannot be empty")
         String documentId,
 
-        @NotBlank(message = "Role name cannot be empty")
+        @NotNull(message = "Role name cannot be empty")
         Long rolId
 ) {
 }

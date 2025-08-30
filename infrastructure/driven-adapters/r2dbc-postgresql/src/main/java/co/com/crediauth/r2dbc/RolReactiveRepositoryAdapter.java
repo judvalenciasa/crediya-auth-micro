@@ -45,14 +45,16 @@ public class RolReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     }
 
     @Override
-    public Mono<Void> getRolById(Long idRol) {
-        return null;
-    }
-
-    @Override
-    public Mono<Rol> getRolByName(String name) {
-        return transactionalOperator.transactional(repository.findByName(name)
-                .map(this::toEntity)
-                .onErrorMap(error -> new HandleDatabaseError("Error buscando rol por nombre: " + error.getMessage())));
+    public Mono<Boolean> getRolById(Long idRol) {
+        return repository.existsById(idRol)
+                .flatMap(exists -> {
+                    if (!exists) {
+                        return Mono.error(new HandleDatabaseError("Rol no encontrado con id: " + idRol));
+                    }
+                    return Mono.just(true);
+                })
+                .onErrorMap(error ->
+                        new HandleDatabaseError("Error buscando rol por ID: " + error.getMessage())
+                );
     }
 }
