@@ -1,4 +1,4 @@
-package co.com.crediauth.r2dbc.entities;
+package co.com.crediauth.r2dbc.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

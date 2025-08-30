@@ -8,9 +8,5 @@ dependencies {
 
     testImplementation 'org.reactivecommons.utils:object-mapper:0.1.0'
 
-    // Añadir Lombok para logging
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-
 }
 

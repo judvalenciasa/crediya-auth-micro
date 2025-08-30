@@ -2,7 +2,7 @@ package co.com.crediauth.r2dbc;
 
 import co.com.crediauth.model.rol.Rol;
 import co.com.crediauth.model.rol.gateways.RolRepository;
-import co.com.crediauth.r2dbc.entities.RolEntity;
+import co.com.crediauth.r2dbc.entity.RolEntity;
 import co.com.crediauth.r2dbc.exception.HandleDatabaseError;
 import co.com.crediauth.r2dbc.helper.ReactiveAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
@@ -12,8 +12,8 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public class RolReactiveRepositoryAdapter extends ReactiveAdapterOperations<
-        Rol/* change for domain model */,
-        RolEntity/* change for adapter model */,
+        Rol,
+        RolEntity,
         Long,
         RolReactiveRepository
 > implements RolRepository {

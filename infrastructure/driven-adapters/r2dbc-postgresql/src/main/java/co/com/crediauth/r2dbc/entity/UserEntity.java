@@ -1,4 +1,4 @@
-package co.com.crediauth.r2dbc.entities;
+package co.com.crediauth.r2dbc.entity;
 
 
 import lombok.Data;
@@ -7,7 +7,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 @Table(name="usuarios")

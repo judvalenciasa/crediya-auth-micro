@@ -11,7 +11,6 @@ import org.mapstruct.Mapper;
 public interface RolMapper {
     Rol toEntity(RolCreateRequestDto dto);
     Rol toEntity(RolUpdateRequestDto dto);
-    Rol toEntity(RolDeleteRequestDto dto);
 
     RolCreateResponseDto toDto(Rol rol);
 

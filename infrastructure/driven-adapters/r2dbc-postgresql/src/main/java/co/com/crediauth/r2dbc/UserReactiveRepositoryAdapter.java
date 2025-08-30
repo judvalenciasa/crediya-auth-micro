@@ -2,11 +2,9 @@ package co.com.crediauth.r2dbc;
 
 import co.com.crediauth.model.user.User;
 import co.com.crediauth.model.user.gateways.UserRepository;
-import co.com.crediauth.r2dbc.entities.UserEntity;
+import co.com.crediauth.r2dbc.entity.UserEntity;
 import co.com.crediauth.r2dbc.exception.HandleDatabaseError;
 import co.com.crediauth.r2dbc.helper.ReactiveAdapterOperations;
-import co.com.crediauth.r2dbc.mapper.UserEntityMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.reactive.TransactionalOperator;
@@ -30,10 +28,11 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
 
     @Override
     public Mono<User> saveUser(User user) {
-        UserEntity userEntity = UserEntityMapper.toEntity(user);
+        UserEntity userEntity = mapper.map(user, UserEntity.class);
         return transactionalOperator.transactional(repository.save(userEntity)
-                .map(UserEntityMapper::toUser));
+                .map(savedEntity -> mapper.map(savedEntity, User.class)));
     }
+
 
 
     @Override
