@@ -18,7 +18,7 @@ public class UserUseCase implements InterfaceUserUseCase {
     @Override
     public Mono<User> saveUser(User user) {
         return validateEmailNotExists(user.getEmail())
-                .then(validateDocumentIdNotExists(user.getDocumentId())) // ← Añadir esta validación
+                .then(validateDocumentIdNotExists(user.getDocumentId()))
                 .then(validateSalary(user.getBaseSalary()))
                 .then(validateRoleExists(ROL_ID_DEFAULT))
                 .flatMap(rol -> {
