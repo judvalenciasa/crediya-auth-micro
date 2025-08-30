@@ -1,12 +1,6 @@
 package co.com.crediauth.model.user;
 
-
-import co.com.crediauth.model.rol.Rol;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class User {
     private Long id;
@@ -19,6 +13,8 @@ public class User {
     private String address;
     private String phone;
     private String documentId;
+    private String password;
+    private boolean enabled;
 
     public User() {
     }
@@ -32,6 +28,22 @@ public class User {
         this.address = address;
         this.phone = phone;
         this.documentId = documentId;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Long getRolId() {
