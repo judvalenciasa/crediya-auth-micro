@@ -18,13 +18,10 @@ public class UserUseCase implements InterfaceUserUseCase {
     @Override
     public Mono<User> saveUser(User user) {
         return validateEmailNotExists(user.getEmail())
-                .then(validateDocumentIdNotExists(user.getDocumentId())) // ← Añadir esta validación
+                .then(validateDocumentIdNotExists(user.getDocumentId()))
                 .then(validateSalary(user.getBaseSalary()))
-                .then(validateRoleExists(ROL_ID_DEFAULT))
-                .flatMap(rol -> {
-                    user.setRolId(rol.getIdRol());
-                    return userRepository.saveUser(user);
-                });
+                .then(existRol(user.getRolId()))
+                .then(userRepository.saveUser(user));
     }
 
     @Override
@@ -46,16 +43,16 @@ public class UserUseCase implements InterfaceUserUseCase {
                 .then();
     }
 
-    private Mono<Rol> validateRoleExists(String name) {
-        return rolRepository.getRolByName(name)
-                .switchIfEmpty(Mono.error(new BusinessException("role not found: " + name)));
-    }
-
     private Mono<Void> validateDocumentIdNotExists(String documentId) {
         return userRepository.existsByDocumentId(documentId)
                 .filter(exists -> !exists)
                 .switchIfEmpty(Mono.error(new BusinessException("Document already exist: " + documentId)))
                 .then();
+    }
+
+    private Mono<Boolean> existRol(Long rolId) {
+        return rolRepository.getRolById(rolId)
+                .switchIfEmpty(Mono.error(new BusinessException("role not found: " + rolId)));
     }
 
 

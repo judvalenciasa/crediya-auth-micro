@@ -27,7 +27,10 @@ public record UserCreateRequestDto(
         String phone,
 
         @NotBlank(message = "Document type cannot be empty")
-        String documentId
+        String documentId,
+
+        @NotNull(message = "Role name cannot be empty")
+        Long rolId
 ) {
 }
 
