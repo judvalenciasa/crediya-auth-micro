@@ -7,6 +7,5 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Mono;
 
 public interface RolReactiveRepository extends ReactiveCrudRepository<RolEntity, Long>, ReactiveQueryByExampleExecutor<RolEntity> {
-    Mono<RolEntity> findByName(String name);
     Mono<RolEntity> findByIdRol(Long idRol);
 }

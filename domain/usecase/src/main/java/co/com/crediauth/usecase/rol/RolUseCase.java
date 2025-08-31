@@ -18,26 +18,12 @@ public class RolUseCase implements IRolUseCase{
 
     @Override
     public Mono<Rol> updateRol(Rol rol) {
-        return rolRepository.existsByidRol(rol.getIdRol())
-                .flatMap(exists -> {
-                    if (exists) {
-                        return rolRepository.saveRol(rol);
-                    } else {
-                        return Mono.error(new AdminException("Rol no encontrado con ID: " + rol.getIdRol()));
-                    }
-                });
+        return rolRepository.findRolById(rol.getIdRol());
     }
 
     @Override
-    public Mono<Void> deleteRol(Long idRol) {
-        return rolRepository.existsByidRol(idRol)
-                .flatMap(exists -> {
-                    if (exists) {
-                        return rolRepository.deleteRol(idRol);
-                    } else {
-                        return Mono.error(new AdminException("Rol no encontrado con ID: " + idRol));
-                    }
-                });
+    public Mono<Boolean> deleteRol(Long idRol) {
+        return rolRepository.deleteRol(idRol);
     }
 
     

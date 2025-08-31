@@ -61,7 +61,7 @@ public class UserHandler {
         String documentNumber = serverRequest.pathVariable("documentNumber");
         log.info("event=USER_EXISTENCE_CHECK_INITIATED, documentNumber={}", documentNumber);
 
-        return interfaceUserUseCase.existsByDocumentId(documentNumber)
+        return interfaceUserUseCase.documentIdExist(documentNumber)
                 .doOnNext(exists -> log.info("event=USER_EXISTENCE_CHECK_RESULT, documentNumber={}, exists={}", documentNumber, exists))
                 .map(exists -> Map.of(
                         "exists", exists,

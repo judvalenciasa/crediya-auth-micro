@@ -36,6 +36,7 @@ paths:
               address: "Calle 123 #45-67"
               phone: "+573001234567"
               documentId: "12345678"
+              rolId: 15
       responses:
         '200':
           description: Usuario creado exitosamente

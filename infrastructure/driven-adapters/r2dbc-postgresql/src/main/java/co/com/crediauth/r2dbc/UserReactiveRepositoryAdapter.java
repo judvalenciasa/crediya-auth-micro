@@ -24,25 +24,30 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         this.transactionalOperator = transactionalOperator;
     }
 
-
-
     @Override
     public Mono<User> saveUser(User user) {
-        UserEntity userEntity = mapper.map(user, UserEntity.class);
-        return transactionalOperator.transactional(repository.save(userEntity)
-                .map(savedEntity -> mapper.map(savedEntity, User.class)));
-    }
-
-
-
-    @Override
-    public Mono<Boolean> existsByEmail(String email) {
-        return repository.existsByEmail(email);
+        return Mono.just(user)
+                .map(u -> mapper.map(u, UserEntity.class))
+                .flatMap(repository::save)
+                .map(savedEntity -> mapper.map(savedEntity, User.class))
+                .onErrorMap(error -> new HandleDatabaseError("Error guardando usuario: " + error.getMessage()))
+                .as(transactionalOperator::transactional);
     }
 
     @Override
-    public Mono<Boolean> existsByDocumentId(String documentId) {
-        return repository.existsByDocumentId(documentId)
+    public Mono<User> findByDocument(String documentId) {
+        return repository.findByDocumentId(documentId)
+                .map(user->mapper.map(user, User.class))
                 .onErrorMap(error -> new HandleDatabaseError("Error verificando documento: " + error.getMessage()));
     }
+
+    @Override
+    public Mono<User> findByEmail(String email) {
+        return repository.findByEmail(email)
+                .map(user->mapper.map(user, User.class))
+                .onErrorMap(error -> new HandleDatabaseError("Error verificando documento: " + error.getMessage()));
+    }
+
+
+
 }

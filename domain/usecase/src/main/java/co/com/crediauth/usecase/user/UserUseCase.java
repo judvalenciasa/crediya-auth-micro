@@ -12,48 +12,50 @@ import reactor.core.publisher.Mono;
 public class UserUseCase implements InterfaceUserUseCase {
     private final UserRepository userRepository;
     private final RolRepository rolRepository;
-    final static  String ROL_ID_DEFAULT = "CLIENT";
     final static double SALARY_BASE_PERMITED = 15000000;
 
     @Override
     public Mono<User> saveUser(User user) {
-        return validateEmailNotExists(user.getEmail())
-                .then(validateDocumentIdNotExists(user.getDocumentId()))
+        return emailExist(user.getEmail())
+                .then(documentIdExist(user.getDocumentId()))
                 .then(validateSalary(user.getBaseSalary()))
                 .then(existRol(user.getRolId()))
                 .then(userRepository.saveUser(user));
     }
 
     @Override
-    public Mono<Boolean> existsByDocumentId(String documentId) {
-        return userRepository.existsByDocumentId(documentId);
+    public Mono<Boolean> documentIdExist(String documentId) {
+        return userRepository.findByDocument(documentId)
+                .hasElement();
     }
 
-    private Mono<Void> validateEmailNotExists(String email) {
-        return userRepository.existsByEmail(email)
-                .filter(exists -> !exists)
-                .switchIfEmpty(Mono.error(new BusinessException(email + "already exists")))
-                .then();
+    private Mono<Boolean> emailExist(String email) {
+        return userRepository.findByEmail(email)
+                .hasElement();
     }
 
     private Mono<Void> validateSalary(Double salary) {
         return Mono.just(salary)
-                .filter(s -> s <= SALARY_BASE_PERMITED)
+                .filter(baseSalary -> baseSalary <= SALARY_BASE_PERMITED)
                 .switchIfEmpty(Mono.error(new BusinessException("Base salary cannot exceed" + SALARY_BASE_PERMITED)))
                 .then();
     }
 
-    private Mono<Void> validateDocumentIdNotExists(String documentId) {
-        return userRepository.existsByDocumentId(documentId)
-                .filter(exists -> !exists)
-                .switchIfEmpty(Mono.error(new BusinessException("Document already exist: " + documentId)))
-                .then();
+    private Mono<Boolean> existRol(Long rolId) {
+        return rolRepository.findRolById(rolId).hasElement();
     }
 
-    private Mono<Boolean> existRol(Long rolId) {
-        return rolRepository.getRolById(rolId)
-                .switchIfEmpty(Mono.error(new BusinessException("role not found: " + rolId)));
-    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
