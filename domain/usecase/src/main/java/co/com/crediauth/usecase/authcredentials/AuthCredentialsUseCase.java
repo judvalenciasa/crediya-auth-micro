@@ -6,7 +6,7 @@ import co.com.crediauth.model.user.User;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
-import javax.naming.AuthenticationException;
+import exception.AuthenticationException;
 
 @RequiredArgsConstructor
 public class AuthCredentialsUseCase implements IAuthCredentialsUseCase{

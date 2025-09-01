@@ -13,6 +13,15 @@ public class AuthSession {
 
     }
 
+    public AuthSession(String accessToken, String refreshToken, String email, String role, Long userId, String fullName) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.email = email;
+        this.role = role;
+        this.userId = userId;
+        this.fullName = fullName;
+    }
+
     public String getRefreshToken() {
         return refreshToken;
     }

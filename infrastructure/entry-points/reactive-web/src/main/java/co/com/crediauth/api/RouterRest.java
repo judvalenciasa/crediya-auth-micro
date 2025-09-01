@@ -15,6 +15,7 @@ public class RouterRest {
 
     private final UserHandler userHandler;
     private final RolHandler rolHandler;
+    private final AuthHandler authHandler;
 
     @Value("${api.base-path:/api}")
     private String apiBasePath;
@@ -22,9 +23,10 @@ public class RouterRest {
     @Value("${api.version:/v1}")
     private String apiVersion;
 
-    public RouterRest(UserHandler userHandler, RolHandler rolHandler) {
+    public RouterRest(UserHandler userHandler, RolHandler rolHandler, AuthHandler authHandler) {
         this.userHandler = userHandler;
         this.rolHandler = rolHandler;
+        this.authHandler = authHandler;
     }
 
     @Bean
@@ -57,6 +59,16 @@ public class RouterRest {
                                 .contentType(MediaType.parseMediaType("application/yaml"))
                                 .bodyValue(new ClassPathResource("openapi/openapi.yaml"))
                 )
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> authRoutes() {
+        String basePath = apiBasePath + apiVersion + "/auth";
+
+        return route()
+                .POST(basePath + "/login", authHandler::login)
+                .POST(basePath + "/refresh", authHandler::refreshToken)
                 .build();
     }
 }

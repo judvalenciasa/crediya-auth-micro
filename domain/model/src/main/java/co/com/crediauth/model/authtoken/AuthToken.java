@@ -12,8 +12,18 @@ public class AuthToken {
     private String role;
 
 
-    public AuthToken(){
+    public AuthToken() {
 
+    }
+
+    public AuthToken(String accessToken, String refreshToken, LocalDateTime accessTokenExpiration, LocalDateTime refreshTokenExpiration, Long userId, String email, String role) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.accessTokenExpiration = accessTokenExpiration;
+        this.refreshTokenExpiration = refreshTokenExpiration;
+        this.userId = userId;
+        this.email = email;
+        this.role = role;
     }
 
     public String getAccessToken() {
