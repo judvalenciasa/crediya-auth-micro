@@ -95,7 +95,7 @@ public class UserBuilder {
                 .lastNames("Pérez")
                 .email("juan.perez@email.com")
                 .documentId("12345678")
-                .baseSalary(2500000.0)
+                .baseSalary(25000.0)
                 .birthDate("1990-05-15")
                 .address("Calle 123 #45-67")
                 .phone("+573001234567")
@@ -104,7 +104,7 @@ public class UserBuilder {
 
     public static UserBuilder anAdminUser() {
         return aValidUser()
-                .names("Admin")
+                .names("ADMIN")
                 .lastNames("System")
                 .email("admin@crediauth.com")
                 .rolId(1L);

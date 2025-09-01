@@ -1,5 +1,8 @@
 package co.com.crediauth.model.rol;
 
+import lombok.Builder;
+
+@Builder
 public class Rol {
     private Long idRol;
     private String name;
@@ -9,6 +12,12 @@ public class Rol {
     }
 
     public Rol(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public Rol(Long idRol, String name, String description) {
+        this.idRol = idRol;
         this.name = name;
         this.description = description;
     }

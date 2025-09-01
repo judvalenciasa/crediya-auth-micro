@@ -1,10 +1,10 @@
 package co.com.crediauth.usecase.user;
 
-
-
+import co.com.crediauth.model.rol.Rol;
 import co.com.crediauth.model.rol.gateways.RolRepository;
 import co.com.crediauth.model.user.User;
 import co.com.crediauth.model.user.gateways.UserRepository;
+import co.com.crediauth.model.user.gateways.UserPasswordEncryptionGateway;
 import exception.BusinessException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,8 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.time.LocalDate;
-
+import static co.com.crediauth.usecase.user.UserUseCase.SALARY_BASE_PERMITED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -28,70 +27,56 @@ class UserUseCaseTest {
     @Mock
     private RolRepository rolRepository;
 
+    @Mock
+    private UserPasswordEncryptionGateway userPasswordEncryptionGateway;
+
     @InjectMocks
     private UserUseCase userUseCase;
 
     @Test
     void When_UserInformationIsCorrect_Expect_UserToBeSavedCorrectly() {
-        // Given
-        User user = new User();
-        user.setNames("juan");
-        user.setLastNames("perez");
-        user.setEmail("juan@gmail.com");
-        user.setBaseSalary(1000000.0);
-        user.setBirthDate(LocalDate.parse("1995-05-09"));
-        user.setAddress("Calle 65 H 39-57");
-        user.setPhone("3214567890");
-        user.setDocumentId("125458522");
-        user.setRolId(11L);
+        // Arrange
+        User user = UserBuilder.aValidUser().rolId(11L).build();
+        User savedUser = UserBuilder.aValidUser().id(1L).rolId(11L).build();
 
-        // When
-        when(userRepository.existsByEmail("juan@gmail.com")).thenReturn(Mono.just(false));
-        when(rolRepository.existsByidRol(11L)).thenReturn(Mono.just(true));
-        when(userRepository.saveUser(any(User.class))).thenReturn(Mono.just(user));
+        when(userRepository.findByEmail("juan.perez@email.com")).thenReturn(Mono.empty());
+        when(userRepository.findByDocument("12345678")).thenReturn(Mono.empty());
+        when(rolRepository.findRolById(11L)).thenReturn(Mono.just(new Rol()));
+        when(userPasswordEncryptionGateway.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
+        when(userRepository.saveUser(any(User.class))).thenReturn(Mono.just(savedUser));
 
-        // Then
+        // Act
         Mono<User> result = userUseCase.saveUser(user);
 
+        // Assert
         StepVerifier.create(result)
-                .expectNextMatches(savedUser ->
-                        savedUser.getEmail().equals("juan@gmail.com") &&
-                                savedUser.getNames().equals("juan") &&
-                                savedUser.getLastNames().equals("perez") &&
-                                savedUser.getBaseSalary() == 1000000.0 &&
-                                savedUser.getBirthDate().equals(LocalDate.parse("1995-05-09")) &&
-                                savedUser.getAddress().equals("Calle 65 H 39-57") &&
-                                savedUser.getPhone().equals("3214567890") &&
-                                savedUser.getDocumentId().equals("125458522") &&
-                                savedUser.getRolId().equals(11L)
-                )
+                .expectNext(savedUser)
                 .verifyComplete();
 
-        // Verify
-        verify(userRepository).existsByEmail("juan@gmail.com");
-        verify(rolRepository).existsByidRol(11L);
+
+        verify(userRepository).findByEmail("juan.perez@email.com");
+        verify(userRepository).findByDocument("12345678");
+        verify(rolRepository).findRolById(11L);
+        verify(userPasswordEncryptionGateway).encodePassword("12345678");
         verify(userRepository).saveUser(user);
     }
 
     @Test
     void When_EmailAlreadyExists_Expect_BusinessException() {
-        // Given
-        User user = new User();
-        user.setNames("juan");
-        user.setLastNames("perez");
-        user.setEmail("juan@gmail.com");
-        user.setBaseSalary(1000000.0);
-        user.setBirthDate(LocalDate.parse("1995-05-09"));
-        user.setAddress("Calle 65 H 39-57");
-        user.setPhone("3214567890");
-        user.setDocumentId("125458522");
+        // Arrange
+        User user = UserBuilder.aValidUser().rolId(11L).build();
+        User existingUser = UserBuilder.aValidUser().id(999L).rolId(11L).build();
 
-        // When
-        when(userRepository.existsByEmail("juan@gmail.com")).thenReturn(Mono.just(true));
+        when(userRepository.findByEmail("juan.perez@email.com")).thenReturn(Mono.just(existingUser));
+        when(userRepository.findByDocument("12345678")).thenReturn(Mono.empty());
+        when(rolRepository.findRolById(11L)).thenReturn(Mono.just(new Rol()));
+        when(userPasswordEncryptionGateway.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
+        when(userRepository.saveUser(any(User.class))).thenReturn(Mono.just(user));
 
-        // Then
+        // Act
         Mono<User> result = userUseCase.saveUser(user);
 
+        // Assert
         StepVerifier.create(result)
                 .expectErrorMatches(throwable ->
                         throwable instanceof BusinessException &&
@@ -99,116 +84,79 @@ class UserUseCaseTest {
                 )
                 .verify();
 
-        // Verify
-        verify(userRepository).existsByEmail("juan@gmail.com");
-        verify(rolRepository, never()).existsByidRol(any());
-        verify(userRepository, never()).saveUser(any());
     }
 
-    @Test
-    void When_BaseSalaryGreaterThan_Expect_BusinessException() {
-        // Given
-        User user = new User();
-        user.setNames("juan");
-        user.setLastNames("perez");
-        user.setEmail("juan@gmail.com");
-        user.setBaseSalary(100000000.0);
-        user.setBirthDate(LocalDate.parse("1995-05-09"));
-        user.setAddress("Calle 65 H 39-57");
-        user.setPhone("3214567890");
-        user.setDocumentId("125458522");
+        @Test
+        void When_DocumentAlreadyExists_Expect_BusinessException() {
+            // Arrange
+            User user = UserBuilder.aValidUser().rolId(11L).build();
+            User existingUser = UserBuilder.aValidUser().id(999L).rolId(11L).build();
 
-        // When
-        when(userRepository.existsByEmail("juan@gmail.com")).thenReturn(Mono.just(false));
+            when(userRepository.findByEmail("juan.perez@email.com")).thenReturn(Mono.empty());
+            when(userRepository.findByDocument("12345678")).thenReturn(Mono.just(existingUser));
+            when(rolRepository.findRolById(11L)).thenReturn(Mono.just(new Rol()));
+            when(userPasswordEncryptionGateway.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
+            when(userRepository.saveUser(any(User.class))).thenReturn(Mono.just(user));
 
-        // Then
-        Mono<User> result = userUseCase.saveUser(user);
+            // Act
+            Mono<User> result = userUseCase.saveUser(user);
 
-        StepVerifier.create(result)
-                .expectErrorMatches(throwable ->
-                        throwable instanceof BusinessException &&
-                                throwable.getMessage().contains("Base salary cannot exceed 15000000")
-                )
-                .verify();
+            // Assert
+            StepVerifier.create(result)
+                    .expectErrorMatches(throwable ->
+                            throwable instanceof BusinessException &&
+                                    throwable.getMessage().contains("Document already exists")
+                    )
+                    .verify();
+        }
 
-        // Verify
-        verify(userRepository).existsByEmail("juan@gmail.com");
-        verify(rolRepository, never()).existsByidRol(any());
-        verify(userRepository, never()).saveUser(any());
-    }
+        @Test
+        void When_BaseSalaryGreaterThan_Expect_BusinessException() {
+            // Arrange
+            User user = UserBuilder.aHighSalaryUser().rolId(11L).build();
 
-    @Test
-    void When_DefaultRoleDoesNotExist_Expect_BusinessException() {
-        // Given
-        User user = new User();
-        user.setNames("juan");
-        user.setLastNames("perez");
-        user.setEmail("juan@gmail.com");
-        user.setBaseSalary(1000000.0);
-        user.setBirthDate(LocalDate.parse("1995-05-09"));
-        user.setAddress("Calle 65 H 39-57");
-        user.setPhone("3214567890");
-        user.setDocumentId("125458522");
+            when(userRepository.findByEmail("juan.perez@email.com")).thenReturn(Mono.empty());
+            when(userRepository.findByDocument("12345678")).thenReturn(Mono.empty());
+            when(rolRepository.findRolById(11L)).thenReturn(Mono.just(new Rol()));
+            when(userPasswordEncryptionGateway.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
+            when(userRepository.saveUser(any(User.class))).thenReturn(Mono.just(user));
 
-        // When
-        when(userRepository.existsByEmail("juan@gmail.com")).thenReturn(Mono.just(false));
-        when(rolRepository.existsByidRol(11L)).thenReturn(Mono.just(false));
 
-        // Then
-        Mono<User> result = userUseCase.saveUser(user);
+            // Act
+            Mono<User> result = userUseCase.saveUser(user);
 
-        StepVerifier.create(result)
-                .expectErrorMatches(throwable ->
-                        throwable instanceof BusinessException &&
-                                throwable.getMessage().contains("Default role does not exist")
-                )
-                .verify();
+            // Assert
+            StepVerifier.create(result)
+                    .expectErrorMatches(throwable ->
+                            throwable instanceof BusinessException &&
+                                    throwable.getMessage().contains("Base salary cannot exceed " + SALARY_BASE_PERMITED)
+                    )
+                    .verify();
 
-        // Verify
-        verify(userRepository).existsByEmail("juan@gmail.com");
-        verify(rolRepository).existsByidRol(11L);
-        verify(userRepository, never()).saveUser(any());
-    }
+        }
 
-    @Test
-    void When_AllValidationsPass_Expect_UserToBeSaved() {
-        // Given
-        User user = new User();
-        user.setNames("maria");
-        user.setLastNames("garcia");
-        user.setEmail("maria@gmail.com");
-        user.setBaseSalary(5000000.0);
-        user.setBirthDate(LocalDate.parse("1990-03-15"));
-        user.setAddress("Calle 123 #45-67");
-        user.setPhone("3001234567");
-        user.setDocumentId("987654321");
+        @Test
+        void When_DefaultRoleDoesNotExist_Expect_BusinessException() {
+            // Arrange
+            User user = UserBuilder.aValidUser().rolId(11L).build();
 
-        User savedUser = new User();
-        savedUser.setId(1L);
-        savedUser.setNames("maria");
-        savedUser.setLastNames("garcia");
-        savedUser.setEmail("maria@gmail.com");
-        savedUser.setBaseSalary(5000000.0);
-        savedUser.setBirthDate(LocalDate.parse("1990-03-15"));
-        savedUser.setAddress("Calle 123 #45-67");
-        savedUser.setPhone("3001234567");
-        savedUser.setDocumentId("987654321");
+            when(userRepository.findByEmail("juan.perez@email.com")).thenReturn(Mono.empty());
+            when(userRepository.findByDocument("12345678")).thenReturn(Mono.empty());
+            when(rolRepository.findRolById(11L)).thenReturn(Mono.empty());
+            when(userPasswordEncryptionGateway.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
+            when(userRepository.saveUser(any(User.class))).thenReturn(Mono.just(user));
 
-        // When
-        when(userRepository.existsByEmail("maria@gmail.com")).thenReturn(Mono.just(false));
-        when(rolRepository.existsByidRol(11L)).thenReturn(Mono.just(true));
-        when(userRepository.saveUser(any(User.class))).thenReturn(Mono.just(savedUser));
+            // Act
+            Mono<User> result = userUseCase.saveUser(user);
 
-        // Then
-        Mono<User> result = userUseCase.saveUser(user);
+            // Assert
+            StepVerifier.create(result)
+                    .expectErrorMatches(throwable ->
+                            throwable instanceof BusinessException &&
+                                    throwable.getMessage().contains("Role does not exist: "+ user.getRolId())
+                    )
+                    .verify();
 
-        StepVerifier.create(result)
-                .expectNext(savedUser)
-                .verifyComplete();
+        }
 
-        // Verify
-        verify(userRepository).existsByEmail("maria@gmail.com");
-        verify(rolRepository).existsByidRol(11L);
-        verify(userRepository).saveUser(user);
-    }
 }

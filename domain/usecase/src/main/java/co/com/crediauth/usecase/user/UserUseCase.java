@@ -19,46 +19,54 @@ public class UserUseCase implements InterfaceUserUseCase {
 
     @Override
     public Mono<User> saveUser(User user) {
-        return emailExist(user.getEmail())
-                .then(documentIdExist(user.getDocumentId()))
-                .then(validateSalary(user.getBaseSalary()))
-                .then(existRol(user.getRolId()))
-                .then(processAddingUserAndPassword(user))
+        return validateEmail(user)
+                .then(validateDocument(user))
+                .then(validateSalary(user))
+                .then(validateRole(user))
+                .then(processPassword(user))
                 .then(userRepository.saveUser(user));
     }
 
     @Override
     public Mono<Boolean> documentIdExist(String documentId) {
-        return userRepository.findByDocument(documentId)
-                .hasElement();
+        return userRepository.findByDocument(documentId).hasElement();
     }
 
-    public Mono<Void> processAddingUserAndPassword(User user){
+    private Mono<Void> validateEmail(User user) {
+        return userRepository.findByEmail(user.getEmail())
+                .flatMap(existing -> Mono.error(new BusinessException("Email already exists: " + user.getEmail())))
+                .switchIfEmpty(Mono.empty())
+                .then();
+    }
+
+    private Mono<Void> validateDocument(User user) {
+        return userRepository.findByDocument(user.getDocumentId())
+                .flatMap(existing -> Mono.error(new BusinessException("Document already exists: " + user.getDocumentId())))
+                .switchIfEmpty(Mono.empty())
+                .then();
+    }
+
+    private Mono<Void> validateSalary(User user) {
+        return Mono.just(user.getBaseSalary())
+                .filter(salary -> salary <= SALARY_BASE_PERMITED)
+                .switchIfEmpty(Mono.error(new BusinessException("Base salary cannot exceed " + SALARY_BASE_PERMITED)))
+                .then();
+    }
+
+    private Mono<Void> validateRole(User user) {
+        return rolRepository.findRolById(user.getRolId())
+                .switchIfEmpty(Mono.error(new BusinessException("Role does not exist: " + user.getRolId())))
+                .then();
+    }
+
+    private Mono<Void> processPassword(User user) {
         return userPasswordEncryptionGateway.encodePassword(user.getDocumentId())
-                .map(encodedPassword -> {
-                    user.setPassword(encodedPassword);
+                .map(password -> {
+                    user.setPassword(password);
                     user.setEnabled(true);
                     return user;
                 })
                 .then();
     }
-
-    private Mono<Boolean> emailExist(String email) {
-        return userRepository.findByEmail(email)
-                .hasElement();
-    }
-
-    private Mono<Void> validateSalary(Double salary) {
-        return Mono.just(salary)
-                .filter(baseSalary -> baseSalary <= SALARY_BASE_PERMITED)
-                .switchIfEmpty(Mono.error(new BusinessException("Base salary cannot exceed" + SALARY_BASE_PERMITED)))
-                .then();
-    }
-
-    private Mono<Boolean> existRol(Long rolId) {
-        return rolRepository.findRolById(rolId).hasElement();
-    }
-
-
 
 }
