@@ -3,6 +3,7 @@ package co.com.crediauth.usecase.user;
 import co.com.crediauth.model.rol.Rol;
 import co.com.crediauth.model.rol.gateways.RolRepository;
 import co.com.crediauth.model.user.User;
+import co.com.crediauth.model.user.gateways.UserPasswordEncryptionGateway;
 import co.com.crediauth.model.user.gateways.UserRepository;
 import exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,8 @@ public class UserUseCase implements InterfaceUserUseCase {
     private final UserRepository userRepository;
     private final RolRepository rolRepository;
     final static double SALARY_BASE_PERMITED = 15000000;
+    private final UserPasswordEncryptionGateway userPasswordEncryptionGateway;
+
 
     @Override
     public Mono<User> saveUser(User user) {
@@ -20,6 +23,7 @@ public class UserUseCase implements InterfaceUserUseCase {
                 .then(documentIdExist(user.getDocumentId()))
                 .then(validateSalary(user.getBaseSalary()))
                 .then(existRol(user.getRolId()))
+                .then(processAddingUserAndPassword(user))
                 .then(userRepository.saveUser(user));
     }
 
@@ -27,6 +31,16 @@ public class UserUseCase implements InterfaceUserUseCase {
     public Mono<Boolean> documentIdExist(String documentId) {
         return userRepository.findByDocument(documentId)
                 .hasElement();
+    }
+
+    public Mono<Void> processAddingUserAndPassword(User user){
+        return userPasswordEncryptionGateway.encodePassword(user.getDocumentId())
+                .map(encodedPassword -> {
+                    user.setPassword(encodedPassword);
+                    user.setEnabled(true);
+                    return user;
+                })
+                .then();
     }
 
     private Mono<Boolean> emailExist(String email) {
@@ -44,17 +58,6 @@ public class UserUseCase implements InterfaceUserUseCase {
     private Mono<Boolean> existRol(Long rolId) {
         return rolRepository.findRolById(rolId).hasElement();
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
 

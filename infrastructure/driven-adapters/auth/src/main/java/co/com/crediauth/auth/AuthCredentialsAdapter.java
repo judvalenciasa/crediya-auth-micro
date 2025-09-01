@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 public class AuthCredentialsAdapter implements AuthCredentialsRepository {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordEncryptionAdapter passwordEncryptionAdapter;
 
     @Override
     public Mono<User> authenticateUser(AuthCredentials credentials) {

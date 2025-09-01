@@ -20,7 +20,7 @@ public class AuthUseCase implements IAuth{
     public Mono<AuthSession> login(AuthCredentials credentials) {
 
         return authCredentialsUseCase.authenticateUser(credentials)
-                .flatMap(user -> authTokenUseCase.generateToken(user))
+                .flatMap(authTokenUseCase::generateToken)
                 .flatMap(authToken -> rolRepository.findRolById(authToken.getUserId())
                         .flatMap(rol -> authSessionUseCase.createSession(
                                 authToken.getAccessToken(),

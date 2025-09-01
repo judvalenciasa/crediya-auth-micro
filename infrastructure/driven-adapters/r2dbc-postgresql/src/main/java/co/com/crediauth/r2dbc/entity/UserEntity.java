@@ -40,4 +40,10 @@ public class UserEntity {
 
     @Column("documento_identidad")
     private String documentId;
+
+    @Column("clave")
+    private String password;
+
+    @Column("activo")
+    private boolean enabled;
 }

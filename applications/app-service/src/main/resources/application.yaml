@@ -39,7 +39,7 @@ api:
 
 # Configuración de JWT
 jwt:
-  secret: tu-clave-secreta-muy-larga-y-segura-para-produccion
+  secret: tu-clave-secreta-super-mega-ultra-larga-y-segura-para-produccion-que-debe-tener-al-menos-64-caracteres-para-cumplir-con-hs512
   expiration: 86400000 # 24 horas en milisegundos
   refresh-expiration: 604800000 # 7 días en milisegundos
 
