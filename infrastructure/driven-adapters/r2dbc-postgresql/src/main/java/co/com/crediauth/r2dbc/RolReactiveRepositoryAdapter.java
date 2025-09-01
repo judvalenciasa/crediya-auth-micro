@@ -2,7 +2,6 @@ package co.com.crediauth.r2dbc;
 
 import co.com.crediauth.model.rol.Rol;
 import co.com.crediauth.model.rol.gateways.RolRepository;
-import co.com.crediauth.model.user.User;
 import co.com.crediauth.r2dbc.entity.RolEntity;
 import co.com.crediauth.r2dbc.exception.HandleDatabaseError;
 import co.com.crediauth.r2dbc.helper.ReactiveAdapterOperations;

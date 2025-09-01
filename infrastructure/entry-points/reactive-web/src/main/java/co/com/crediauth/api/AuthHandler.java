@@ -36,7 +36,7 @@ public class AuthHandler {
         log.info("event=REFRESH_TOKEN_REQUEST_RECEIVED");
 
         return request.bodyToMono(String.class)
-                .flatMap(refreshToken -> authUseCase.refreshToken(refreshToken))
+                .flatMap(authUseCase::refreshToken)
                 .map(authMapper::toDto)
                 .flatMap(response -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)

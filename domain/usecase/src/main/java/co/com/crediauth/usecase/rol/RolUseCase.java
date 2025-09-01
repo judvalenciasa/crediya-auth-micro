@@ -2,7 +2,6 @@ package co.com.crediauth.usecase.rol;
 
 import co.com.crediauth.model.rol.Rol;
 import co.com.crediauth.model.rol.gateways.RolRepository;
-import exception.AdminException;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 

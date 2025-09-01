@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: CrediAuth API
-  description: API para gestión de usuarios, roles y autenticación
+  description: API for user, role, and authentication management
   version: 1.0.0
   contact:
     name: CrediAuth Team
@@ -9,9 +9,9 @@ info:
 
 servers:
   - url: http://localhost:8082
-    description: Servidor de desarrollo
+    description: Development server
   - url: https://api.crediauth.com
-    description: Servidor de producción
+    description: Production server
 
 paths:
   # Authentication endpoints
@@ -19,8 +19,8 @@ paths:
     post:
       tags:
         - Authentication
-      summary: Iniciar sesión
-      description: Autentica un usuario y retorna tokens de acceso
+      summary: User login
+      description: Authenticates a user and returns access tokens
       requestBody:
         required: true
         content:
@@ -28,11 +28,11 @@ paths:
             schema:
               $ref: '#/components/schemas/UserLoginRequestDto'
             example:
-              email: "usuario@example.com"
+              email: "user@example.com"
               password: "password123"
       responses:
         '200':
-          description: Autenticación exitosa
+          description: Successful authentication
           content:
             application/json:
               schema:
@@ -40,18 +40,18 @@ paths:
               example:
                 accessToken: "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c3VhcmlvQGV4YW1wbGUuY29tIiwiaWF0IjoxNjM5NzI5NjAwLCJleHAiOjE2Mzk3MzMyMDB9..."
                 refreshToken: "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c3VhcmlvQGV4YW1wbGUuY29tIiwiaWF0IjoxNjM5NzI5NjAwLCJleHAiOjE2Mzk3ODU2MDB9..."
-                email: "usuario@example.com"
-                role: "CLIENTE"
+                email: "user@example.com"
+                role: "CLIENT"
                 userId: 123
-                fullName: "Juan Pérez"
+                fullName: "John Doe"
         '401':
-          description: Credenciales inválidas
+          description: Invalid credentials
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
         '400':
-          description: Datos de entrada inválidos
+          description: Invalid input data
           content:
             application/json:
               schema:
@@ -61,8 +61,8 @@ paths:
     post:
       tags:
         - Authentication
-      summary: Renovar token
-      description: Renueva el token de acceso usando el refresh token
+      summary: Refresh token
+      description: Renews the access token using the refresh token
       requestBody:
         required: true
         content:
@@ -72,19 +72,19 @@ paths:
             example: "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c3VhcmlvQGV4YW1wbGUuY29tIiwiaWF0IjoxNjM5NzI5NjAwLCJleHAiOjE2Mzk3ODU2MDB9..."
       responses:
         '200':
-          description: Token renovado exitosamente
+          description: Token successfully renewed
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserLoginResponseDto'
         '401':
-          description: Refresh token inválido o expirado
+          description: Invalid or expired refresh token
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
         '400':
-          description: Datos de entrada inválidos
+          description: Invalid input data
           content:
             application/json:
               schema:
@@ -95,8 +95,8 @@ paths:
     post:
       tags:
         - User Management
-      summary: Crear usuario
-      description: Crea un nuevo usuario en el sistema (requiere autenticación ADMIN/ASESOR)
+      summary: Create user
+      description: Creates a new user in the system (requires ADMIN/ADVISOR authentication)
       security:
         - BearerAuth: []
       requestBody:
@@ -106,42 +106,42 @@ paths:
             schema:
               $ref: '#/components/schemas/UserCreateRequestDto'
             example:
-              names: "Juan Carlos"
-              lastNames: "Pérez García"
-              email: "juan.perez@email.com"
+              names: "John Carlos"
+              lastNames: "Doe Smith"
+              email: "john.doe@email.com"
               baseSalary: 2500000.0
               birthDate: "1990-05-15"
-              address: "Calle 123 #45-67"
+              address: "Street 123 #45-67"
               phone: "+573001234567"
               documentId: "12345678"
               rolId: 15
       responses:
         '200':
-          description: Usuario creado exitosamente
+          description: User successfully created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponseDto'
         '400':
-          description: Datos de entrada inválidos
+          description: Invalid input data
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
         '401':
-          description: No autorizado - Token requerido
+          description: Unauthorized - Token required
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
         '403':
-          description: Prohibido - Rol insuficiente
+          description: Forbidden - Insufficient role
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
         '409':
-          description: Email ya existe
+          description: Email already exists
           content:
             application/json:
               schema:
@@ -151,21 +151,21 @@ paths:
     get:
       tags:
         - User Management
-      summary: Verificar existencia de usuario
-      description: Verifica si existe un usuario por número de documento
+      summary: Check user existence
+      description: Verifies if a user exists by document number
       security:
         - BearerAuth: []
       parameters:
         - name: documentNumber
           in: path
           required: true
-          description: Número de documento del usuario
+          description: User's document number
           schema:
             type: string
           example: "12345678"
       responses:
         '200':
-          description: Usuario encontrado
+          description: User found
           content:
             application/json:
               schema:
@@ -173,24 +173,24 @@ paths:
                 properties:
                   exists:
                     type: boolean
-                    description: Indica si el usuario existe
+                    description: Indicates if the user exists
                     example: true
                   documentNumber:
                     type: string
-                    description: Número de documento consultado
+                    description: Consulted document number
                     example: "12345678"
                   message:
                     type: string
-                    description: Mensaje descriptivo
-                    example: "Usuario encontrado"
+                    description: Descriptive message
+                    example: "User found"
         '401':
-          description: No autorizado - Token requerido
+          description: Unauthorized - Token required
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
         '404':
-          description: Usuario no encontrado
+          description: User not found
           content:
             application/json:
               schema:
@@ -201,8 +201,8 @@ paths:
     post:
       tags:
         - Role Management
-      summary: Crear rol
-      description: Crea un nuevo rol en el sistema
+      summary: Create role
+      description: Creates a new role in the system
       security:
         - BearerAuth: []
       requestBody:
@@ -213,28 +213,28 @@ paths:
               $ref: '#/components/schemas/RolCreateRequestDto'
             example:
               name: "ADMIN"
-              description: "Rol de administrador del sistema"
+              description: "System administrator role"
       responses:
         '200':
-          description: Rol creado exitosamente
+          description: Role successfully created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RolResponseDto'
         '400':
-          description: Datos de entrada inválidos
+          description: Invalid input data
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
         '401':
-          description: No autorizado - Token requerido
+          description: Unauthorized - Token required
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
         '409':
-          description: Rol ya existe
+          description: Role already exists
           content:
             application/json:
               schema:
@@ -243,8 +243,8 @@ paths:
     put:
       tags:
         - Role Management
-      summary: Actualizar rol
-      description: Actualiza un rol existente en el sistema
+      summary: Update role
+      description: Updates an existing role in the system
       security:
         - BearerAuth: []
       requestBody:
@@ -256,28 +256,28 @@ paths:
             example:
               idRol: 1
               name: "ADMIN"
-              description: "Rol de administrador del sistema actualizado"
+              description: "Updated system administrator role"
       responses:
         '200':
-          description: Rol actualizado exitosamente
+          description: Role successfully updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RolResponseDto'
         '400':
-          description: Datos de entrada inválidos
+          description: Invalid input data
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
         '401':
-          description: No autorizado - Token requerido
+          description: Unauthorized - Token required
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
         '404':
-          description: Rol no encontrado
+          description: Role not found
           content:
             application/json:
               schema:
@@ -287,30 +287,30 @@ paths:
     delete:
       tags:
         - Role Management
-      summary: Eliminar rol
-      description: Elimina un rol del sistema
+      summary: Delete role
+      description: Deletes a role from the system
       security:
         - BearerAuth: []
       parameters:
         - name: idRol
           in: path
           required: true
-          description: ID del rol a eliminar
+          description: ID of the role to delete
           schema:
             type: integer
             format: int64
           example: 1
       responses:
         '204':
-          description: Rol eliminado exitosamente
+          description: Role successfully deleted
         '401':
-          description: No autorizado - Token requerido
+          description: Unauthorized - Token required
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
         '404':
-          description: Rol no encontrado
+          description: Role not found
           content:
             application/json:
               schema:
@@ -322,7 +322,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Token JWT obtenido del endpoint de login
+      description: JWT token obtained from login endpoint
 
   schemas:
     # Authentication schemas
@@ -335,11 +335,11 @@ components:
         email:
           type: string
           format: email
-          description: Email del usuario
-          example: "usuario@example.com"
+          description: User's email
+          example: "user@example.com"
         password:
           type: string
-          description: Contraseña del usuario
+          description: User's password
           example: "password123"
           minLength: 6
 
@@ -355,31 +355,31 @@ components:
       properties:
         accessToken:
           type: string
-          description: Token de acceso JWT
+          description: JWT access token
           example: "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c3VhcmlvQGV4YW1wbGUuY29tIiwiaWF0IjoxNjM5NzI5NjAwLCJleHAiOjE2Mzk3MzMyMDB9..."
         refreshToken:
           type: string
-          description: Token de renovación JWT
+          description: JWT refresh token
           example: "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c3VhcmlvQGV4YW1wbGUuY29tIiwiaWF0IjoxNjM5NzI5NjAwLCJleHAiOjE2Mzk3ODU2MDB9..."
         email:
           type: string
           format: email
-          description: Email del usuario autenticado
-          example: "usuario@example.com"
+          description: Authenticated user's email
+          example: "user@example.com"
         role:
           type: string
-          description: Rol del usuario
-          example: "CLIENTE"
-          enum: ["ADMIN", "ASESOR", "CLIENTE"]
+          description: User's role
+          example: "CLIENT"
+          enum: ["ADMIN", "ADVISOR", "CLIENT"]
         userId:
           type: integer
           format: int64
-          description: ID del usuario
+          description: User's ID
           example: 123
         fullName:
           type: string
-          description: Nombre completo del usuario
-          example: "Juan Pérez"
+          description: User's full name
+          example: "John Doe"
 
     # User schemas
     UserCreateRequestDto:
@@ -393,48 +393,48 @@ components:
       properties:
         names:
           type: string
-          description: Nombres del usuario
-          example: "Juan Carlos"
+          description: User's first names
+          example: "John Carlos"
           minLength: 1
         lastNames:
           type: string
-          description: Apellidos del usuario
-          example: "Pérez García"
+          description: User's last names
+          example: "Doe Smith"
           minLength: 1
         email:
           type: string
           format: email
-          description: Email del usuario
-          example: "juan.perez@email.com"
+          description: User's email
+          example: "john.doe@email.com"
         baseSalary:
           type: number
           format: double
-          description: Salario base del usuario
+          description: User's base salary
           example: 2500000.0
           minimum: 0
           maximum: 15000000
         birthDate:
           type: string
           format: date
-          description: Fecha de nacimiento
+          description: User's birth date
           example: "1990-05-15"
         address:
           type: string
-          description: Dirección del usuario
-          example: "Calle 123 #45-67"
+          description: User's address
+          example: "Street 123 #45-67"
         phone:
           type: string
-          description: Teléfono del usuario
+          description: User's phone number
           example: "+573001234567"
         documentId:
           type: string
-          description: Número de documento de identidad
+          description: User's identity document number
           example: "12345678"
           minLength: 1
         rolId:
           type: integer
           format: int64
-          description: ID del rol asignado
+          description: Assigned role ID
           example: 15
 
     UserResponseDto:
@@ -449,46 +449,46 @@ components:
       properties:
         id:
           type: string
-          description: ID único del usuario
+          description: User's unique ID
           example: "1"
         names:
           type: string
-          description: Nombres del usuario
-          example: "Juan Carlos"
+          description: User's first names
+          example: "John Carlos"
         lastNames:
           type: string
-          description: Apellidos del usuario
-          example: "Pérez García"
+          description: User's last names
+          example: "Doe Smith"
         email:
           type: string
           format: email
-          description: Email del usuario
-          example: "juan.perez@email.com"
+          description: User's email
+          example: "john.doe@email.com"
         baseSalary:
           type: number
           format: double
-          description: Salario base del usuario
+          description: User's base salary
           example: 2500000.0
         birthDate:
           type: string
           format: date
-          description: Fecha de nacimiento
+          description: User's birth date
           example: "1990-05-15"
         address:
           type: string
-          description: Dirección del usuario
-          example: "Calle 123 #45-67"
+          description: User's address
+          example: "Street 123 #45-67"
         phone:
           type: string
-          description: Teléfono del usuario
+          description: User's phone number
           example: "+573001234567"
         documentId:
           type: string
-          description: Número de documento de identidad
+          description: User's identity document number
           example: "12345678"
         rolId:
           type: string
-          description: ID del rol asignado
+          description: Assigned role ID
           example: "1"
 
     # Role schemas
@@ -499,13 +499,77 @@ components:
       properties:
         name:
           type: string
-          description: Nombre del rol
+          description: Role name
           example: "ADMIN"
           minLength: 2
           maxLength: 50
         description:
           type: string
-          description: Descripción del rol
-          example: "Rol de administrador del sistema"
+          description: Role description
+          example: "System administrator role"
           maxLength: 200
 
+    RolUpdateRequestDto:
+      type: object
+      required:
+        - idRol
+        - name
+      properties:
+        idRol:
+          type: integer
+          format: int64
+          description: ID of the role to update
+          example: 1
+        name:
+          type: string
+          description: New role name
+          example: "ADMIN"
+          minLength: 2
+          maxLength: 50
+        description:
+          type: string
+          description: New role description
+          example: "Updated system administrator role"
+          maxLength: 200
+
+    RolResponseDto:
+      type: object
+      required:
+        - idRol
+        - name
+      properties:
+        idRol:
+          type: integer
+          format: int64
+          description: Role's unique ID
+          example: 1
+        name:
+          type: string
+          description: Role name
+          example: "ADMIN"
+        description:
+          type: string
+          description: Role description
+          example: "System administrator role"
+
+    # Error response schema
+    ErrorResponseDto:
+      type: object
+      required:
+        - message
+        - code
+        - timestamp
+      properties:
+        message:
+          type: string
+          description: Descriptive error message
+          example: "Invalid credentials"
+        code:
+          type: string
+          description: Specific error code
+          example: "AUTH_001"
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp in ISO 8601 format
+          example: "2024-01-15T10:30:00Z"

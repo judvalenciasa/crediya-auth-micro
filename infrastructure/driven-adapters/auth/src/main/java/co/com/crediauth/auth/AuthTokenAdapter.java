@@ -126,7 +126,7 @@ public class AuthTokenAdapter implements AuthTokenRepository {
     public Mono<AuthToken> refreshToken(String refreshToken) {
         return validateToken(refreshToken)
                 .flatMap(valid -> {
-                    if (!valid) {
+                    if (valid == null || !valid) {
                         return Mono.error(new RuntimeException("Refresh token inválido"));
                     }
                     return getEmailFromToken(refreshToken)

@@ -1,6 +1,5 @@
 package co.com.crediauth.usecase.user;
 
-import co.com.crediauth.model.rol.Rol;
 import co.com.crediauth.model.rol.gateways.RolRepository;
 import co.com.crediauth.model.user.User;
 import co.com.crediauth.model.user.gateways.UserPasswordEncryptionGateway;
@@ -11,9 +10,9 @@ import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 public class UserUseCase implements InterfaceUserUseCase {
+    static final double SALARY_BASE_PERMITED = 15000000;
     private final UserRepository userRepository;
     private final RolRepository rolRepository;
-    final static double SALARY_BASE_PERMITED = 15000000;
     private final UserPasswordEncryptionGateway userPasswordEncryptionGateway;
 
 

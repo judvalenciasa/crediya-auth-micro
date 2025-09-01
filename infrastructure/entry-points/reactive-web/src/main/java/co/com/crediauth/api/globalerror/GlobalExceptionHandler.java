@@ -16,19 +16,21 @@ import java.time.format.DateTimeFormatter;
 public class GlobalExceptionHandler {
 
     public Mono<ServerResponse> handleError(Throwable throwable) {
-        if (throwable instanceof ValidationException) {
-            return handleCustomValidationException((ValidationException) throwable);
-        } else if (throwable instanceof BusinessException) {
-            return handleBusinessException((BusinessException) throwable);
-        } else if (throwable instanceof AdminException) {
-            return handleAdminException((AdminException) throwable);
-        } else {
-            return handleGenericError(throwable);
+        if (throwable instanceof ValidationException validationException) {
+            return handleCustomValidationException(validationException);
         }
+        if (throwable instanceof BusinessException businessException) {
+            return handleBusinessException(businessException);
+        }
+        if (throwable instanceof AdminException adminException) {
+            return handleAdminException(adminException);
+        }
+        return handleGenericError(throwable);
+
     }
 
     private Mono<ServerResponse> handleCustomValidationException(ValidationException ex) {
-        String message = ex.getErrors().getAllErrors().get(0).getDefaultMessage();
+        String message = ex.getErrors().getAllErrors().getFirst().getDefaultMessage();
         return buildErrorResponse(message, ErrorConstants.Codes.VALIDATION, HttpStatus.BAD_REQUEST);
     }
 
