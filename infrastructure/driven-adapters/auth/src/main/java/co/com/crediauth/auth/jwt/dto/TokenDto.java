@@ -1,4 +1,4 @@
-package co.com.crediauth.auth.dto;
+package co.com.crediauth.auth.jwt.dto;
 
 import lombok.Data;
 

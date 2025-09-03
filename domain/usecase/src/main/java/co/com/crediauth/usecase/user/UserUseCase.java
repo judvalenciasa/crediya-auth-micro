@@ -2,8 +2,8 @@ package co.com.crediauth.usecase.user;
 
 import co.com.crediauth.model.rol.gateways.RolRepository;
 import co.com.crediauth.model.user.User;
-import co.com.crediauth.model.user.gateways.UserPasswordEncryptionGateway;
 import co.com.crediauth.model.user.gateways.UserRepository;
+import co.com.crediauth.usecase.seguridad.ISecurityUseCase;
 import exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -13,7 +13,7 @@ public class UserUseCase implements InterfaceUserUseCase {
     static final double SALARY_BASE_PERMITED = 15000000;
     private final UserRepository userRepository;
     private final RolRepository rolRepository;
-    private final UserPasswordEncryptionGateway userPasswordEncryptionGateway;
+    private final ISecurityUseCase iSecurityUseCase;
 
 
     @Override
@@ -59,7 +59,7 @@ public class UserUseCase implements InterfaceUserUseCase {
     }
 
     private Mono<Void> processPassword(User user) {
-        return userPasswordEncryptionGateway.encodePassword(user.getDocumentId())
+        return iSecurityUseCase.encodePassword(user.getDocumentId())
                 .map(password -> {
                     user.setPassword(password);
                     user.setEnabled(true);

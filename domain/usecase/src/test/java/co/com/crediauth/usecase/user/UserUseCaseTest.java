@@ -4,7 +4,7 @@ import co.com.crediauth.model.rol.Rol;
 import co.com.crediauth.model.rol.gateways.RolRepository;
 import co.com.crediauth.model.user.User;
 import co.com.crediauth.model.user.gateways.UserRepository;
-import co.com.crediauth.model.user.gateways.UserPasswordEncryptionGateway;
+import co.com.crediauth.usecase.seguridad.ISecurityUseCase;
 import exception.BusinessException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class UserUseCaseTest {
     private RolRepository rolRepository;
 
     @Mock
-    private UserPasswordEncryptionGateway userPasswordEncryptionGateway;
+    private ISecurityUseCase iSecurityUseCase;
 
     @InjectMocks
     private UserUseCase userUseCase;
@@ -42,7 +42,7 @@ class UserUseCaseTest {
         when(userRepository.findByEmail("juan.perez@email.com")).thenReturn(Mono.empty());
         when(userRepository.findByDocument("12345678")).thenReturn(Mono.empty());
         when(rolRepository.findRolById(11L)).thenReturn(Mono.just(new Rol()));
-        when(userPasswordEncryptionGateway.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
+        when(iSecurityUseCase.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
         when(userRepository.saveUser(any(User.class))).thenReturn(Mono.just(savedUser));
 
         // Act
@@ -57,7 +57,7 @@ class UserUseCaseTest {
         verify(userRepository).findByEmail("juan.perez@email.com");
         verify(userRepository).findByDocument("12345678");
         verify(rolRepository).findRolById(11L);
-        verify(userPasswordEncryptionGateway).encodePassword("12345678");
+        verify(iSecurityUseCase).encodePassword("12345678");
         verify(userRepository).saveUser(user);
     }
 
@@ -70,7 +70,7 @@ class UserUseCaseTest {
         when(userRepository.findByEmail("juan.perez@email.com")).thenReturn(Mono.just(existingUser));
         when(userRepository.findByDocument("12345678")).thenReturn(Mono.empty());
         when(rolRepository.findRolById(11L)).thenReturn(Mono.just(new Rol()));
-        when(userPasswordEncryptionGateway.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
+        when(iSecurityUseCase.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
         when(userRepository.saveUser(any(User.class))).thenReturn(Mono.just(user));
 
         // Act
@@ -95,7 +95,7 @@ class UserUseCaseTest {
             when(userRepository.findByEmail("juan.perez@email.com")).thenReturn(Mono.empty());
             when(userRepository.findByDocument("12345678")).thenReturn(Mono.just(existingUser));
             when(rolRepository.findRolById(11L)).thenReturn(Mono.just(new Rol()));
-            when(userPasswordEncryptionGateway.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
+            when(iSecurityUseCase.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
             when(userRepository.saveUser(any(User.class))).thenReturn(Mono.just(user));
 
             // Act
@@ -118,7 +118,7 @@ class UserUseCaseTest {
             when(userRepository.findByEmail("juan.perez@email.com")).thenReturn(Mono.empty());
             when(userRepository.findByDocument("12345678")).thenReturn(Mono.empty());
             when(rolRepository.findRolById(11L)).thenReturn(Mono.just(new Rol()));
-            when(userPasswordEncryptionGateway.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
+            when(iSecurityUseCase.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
             when(userRepository.saveUser(any(User.class))).thenReturn(Mono.just(user));
 
 
@@ -143,7 +143,7 @@ class UserUseCaseTest {
             when(userRepository.findByEmail("juan.perez@email.com")).thenReturn(Mono.empty());
             when(userRepository.findByDocument("12345678")).thenReturn(Mono.empty());
             when(rolRepository.findRolById(11L)).thenReturn(Mono.empty());
-            when(userPasswordEncryptionGateway.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
+            when(iSecurityUseCase.encodePassword("12345678")).thenReturn(Mono.just("encodedPassword"));
             when(userRepository.saveUser(any(User.class))).thenReturn(Mono.just(user));
 
             // Act

@@ -1,4 +1,4 @@
-package co.com.crediauth.auth.security;
+package co.com.crediauth.auth.jwt.security;
 
 import co.com.crediauth.model.seguridad.LoginRequest;
 import co.com.crediauth.model.user.User;
@@ -20,11 +20,5 @@ public class Credentials {
         return userRepository.findByEmail(credentials.email())
                 .filter(user -> passwordEncoder.matches(credentials.password(), user.getPassword()))
                 .switchIfEmpty(Mono.empty());
-    }
-
-    public Mono<Boolean> validateCredentials(LoginRequest credentials) {
-        return authenticateUser(credentials)
-                .map(user -> true)
-                .defaultIfEmpty(false);
     }
 }

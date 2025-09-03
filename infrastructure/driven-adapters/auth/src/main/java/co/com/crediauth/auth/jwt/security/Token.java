@@ -1,7 +1,7 @@
-package co.com.crediauth.auth.security;
+package co.com.crediauth.auth.jwt.security;
 
 
-import co.com.crediauth.auth.dto.TokenDto;
+import co.com.crediauth.auth.jwt.dto.TokenDto;
 import co.com.crediauth.model.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
