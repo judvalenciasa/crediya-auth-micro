@@ -33,7 +33,6 @@ public class Auth implements ISecurityUseCase {
                                 .doOnNext(tokenDto -> log.info("Tokens generados exitosamente"))
                                 .map(tokenDto -> new LoginResponse(
                                         tokenDto.getAccessToken(),
-                                        tokenDto.getRefreshToken(),
                                         tokenDto.getEmail(),
                                         tokenDto.getRole().toString(),
                                         tokenDto.getUserId(),
@@ -43,41 +42,16 @@ public class Auth implements ISecurityUseCase {
                     } else {
                         log.warn("Credenciales inválidas para: {}", loginRequest.email());
                         return Mono.just(new LoginResponse(
-                                null, null, null, null, null, null,
+                                null, null,  null, null, null,
                                 "Credenciales inválidas"
                         ));
                     }
                 })
                 .doOnError(error -> log.error("Error durante el login: {}", error.getMessage(), error))
                 .onErrorReturn(new LoginResponse(
-                        null, null, null, null, null, null,
+                        null, null, null, null, null,
                         "Error interno del servidor"
                 ));
     }
 
-    @Override
-    public Mono<LoginResponse> refreshToken(String refreshToken) {
-
-        return token.refreshToken(refreshToken)
-                .map(tokenDto -> {
-                    return new LoginResponse(
-                            tokenDto.getAccessToken(),
-                            tokenDto.getRefreshToken(),
-                            tokenDto.getEmail(),
-                            tokenDto.getRole().toString(),
-                            tokenDto.getUserId(),
-                            tokenDto.getFullName(),
-                            "Token renovado exitosamente"
-                    );
-                })
-                .onErrorReturn(new LoginResponse(
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        "Error al renovar token"
-                ));
-    }
 }

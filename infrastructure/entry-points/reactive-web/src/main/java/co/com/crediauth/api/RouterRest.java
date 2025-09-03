@@ -68,7 +68,6 @@ public class RouterRest {
 
         return route()
                 .POST(basePath + "/login", authHandler::login)
-                .POST(basePath + "/refresh", authHandler::refreshToken)
                 .build();
     }
 }

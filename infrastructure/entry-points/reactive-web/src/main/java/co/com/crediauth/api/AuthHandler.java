@@ -3,7 +3,6 @@ package co.com.crediauth.api;
 import co.com.crediauth.api.exception.AuthenticationException;
 import co.com.crediauth.api.globalerror.GlobalExceptionHandler;
 import co.com.crediauth.api.mapper.AuthMapper;
-import co.com.crediauth.api.requestdto.security.RefreshTokenRequestDto;
 import co.com.crediauth.api.requestdto.security.UserLoginRequestDto;
 import co.com.crediauth.usecase.seguridad.ISecurityUseCase;
 import lombok.RequiredArgsConstructor;
@@ -43,23 +42,5 @@ public class AuthHandler {
                 });
     }
 
-    public Mono<ServerResponse> refreshToken(ServerRequest request) {
-        log.info("event=REFRESH_TOKEN_REQUEST_RECEIVED");
 
-        return request.bodyToMono(RefreshTokenRequestDto.class)
-                .doOnNext(dto -> log.info("Refresh token request recibido"))
-                .flatMap(dto -> iSecurityUseCase.refreshToken(dto.refreshToken()))
-                .flatMap(loginResponse -> {
-                    if (loginResponse.accessToken() != null) {
-                        return ServerResponse.ok()
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(loginResponse);
-                    } else {
-                        return ServerResponse.badRequest()
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(new AuthenticationException(loginResponse.message()));
-                    }
-                })
-                .onErrorResume(exceptionHandler::handleError);
-    }
 }

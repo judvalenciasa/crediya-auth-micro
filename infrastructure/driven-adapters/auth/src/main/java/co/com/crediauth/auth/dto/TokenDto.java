@@ -8,19 +8,15 @@ import java.time.LocalDateTime;
 @Data
 public class TokenDto {
     private String accessToken;
-    private String refreshToken;
     private LocalDateTime accessTokenExpiration;
-    private LocalDateTime refreshTokenExpiration;
     private String email;
     private Long role;
     private Long userId;
     private String fullName;
 
-    public TokenDto(String accessToken, String refreshToken, LocalDateTime accessTokenExpiration, LocalDateTime refreshTokenExpiration, String email, Long role, Long userId, String fullName) {
+    public TokenDto(String accessToken, LocalDateTime accessTokenExpiration, String email, Long role, Long userId, String fullName) {
         this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
         this.accessTokenExpiration = accessTokenExpiration;
-        this.refreshTokenExpiration = refreshTokenExpiration;
         this.email = email;
         this.role = role;
         this.userId = userId;
@@ -35,28 +31,12 @@ public class TokenDto {
         this.accessToken = accessToken;
     }
 
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
     public LocalDateTime getAccessTokenExpiration() {
         return accessTokenExpiration;
     }
 
     public void setAccessTokenExpiration(LocalDateTime accessTokenExpiration) {
         this.accessTokenExpiration = accessTokenExpiration;
-    }
-
-    public LocalDateTime getRefreshTokenExpiration() {
-        return refreshTokenExpiration;
-    }
-
-    public void setRefreshTokenExpiration(LocalDateTime refreshTokenExpiration) {
-        this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
     public String getEmail() {
