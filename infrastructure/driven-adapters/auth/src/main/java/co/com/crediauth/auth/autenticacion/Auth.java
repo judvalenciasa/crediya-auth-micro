@@ -42,7 +42,7 @@ public class Auth implements ISecurityUseCase {
                     } else {
                         log.warn("Credenciales inválidas para: {}", loginRequest.email());
                         return Mono.just(new LoginResponse(
-                                null, null, null, null, null,
+                                null, null,  null, null, null,
                                 "Credenciales inválidas"
                         ));
                     }
@@ -53,6 +53,5 @@ public class Auth implements ISecurityUseCase {
                         "Error interno del servidor"
                 ));
     }
-
 
 }

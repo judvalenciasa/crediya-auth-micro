@@ -55,6 +55,7 @@ public class Token {
                     .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                     .compact();
 
+
             return new TokenDto(
                     accessToken,
                     accessTokenExpiration,
@@ -113,15 +114,11 @@ public class Token {
         });
     }
 
-
     private Mono<TokenDto> generateTokenFromEmail(String email) {
         User tempUser = new User();
         tempUser.setEmail(email);
 
         return generateToken(tempUser);
     }
-
-
-
 
 }
