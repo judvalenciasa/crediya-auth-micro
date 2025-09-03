@@ -1,29 +1,30 @@
-package co.com.crediauth.model.authtoken;
+package co.com.crediauth.auth.dto;
+
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
-public class AuthToken {
+
+@Data
+public class TokenDto {
     private String accessToken;
     private String refreshToken;
     private LocalDateTime accessTokenExpiration;
     private LocalDateTime refreshTokenExpiration;
-    private Long userId;
     private String email;
-    private String role;
+    private Long role;
+    private Long userId;
+    private String fullName;
 
-
-    public AuthToken() {
-
-    }
-
-    public AuthToken(String accessToken, String refreshToken, LocalDateTime accessTokenExpiration, LocalDateTime refreshTokenExpiration, Long userId, String email, String role) {
+    public TokenDto(String accessToken, String refreshToken, LocalDateTime accessTokenExpiration, LocalDateTime refreshTokenExpiration, String email, Long role, Long userId, String fullName) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.accessTokenExpiration = accessTokenExpiration;
         this.refreshTokenExpiration = refreshTokenExpiration;
-        this.userId = userId;
         this.email = email;
         this.role = role;
+        this.userId = userId;
+        this.fullName = fullName;
     }
 
     public String getAccessToken() {
@@ -58,14 +59,6 @@ public class AuthToken {
         this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -74,11 +67,27 @@ public class AuthToken {
         this.email = email;
     }
 
-    public String getRole() {
+    public Long getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Long role) {
         this.role = role;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

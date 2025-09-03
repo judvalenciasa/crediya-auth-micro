@@ -1,12 +1,13 @@
-package co.com.crediauth.auth;
+package co.com.crediauth.auth.security;
 
-import co.com.crediauth.model.authtoken.AuthToken;
-import co.com.crediauth.model.authtoken.gateways.AuthTokenRepository;
+
+import co.com.crediauth.auth.dto.TokenDto;
 import co.com.crediauth.model.user.User;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -19,11 +20,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
-public class AuthTokenAdapter implements AuthTokenRepository {
-
+public class Token {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
@@ -37,17 +35,17 @@ public class AuthTokenAdapter implements AuthTokenRepository {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    @Override
-    public Mono<AuthToken> generateToken(User user) {
+    public Mono<TokenDto> generateToken(User user) {
         return Mono.fromCallable(() -> {
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime accessTokenExpiration = now.plusSeconds(jwtExpiration / 1000);
             LocalDateTime refreshTokenExpiration = now.plusSeconds(jwtRefreshExpiration / 1000);
 
             Map<String, Object> claims = new HashMap<>();
-            claims.put("userId", user.getId());
+
             claims.put("email", user.getEmail());
-            claims.put("roleId", user.getRolId());
+            claims.put("role", user.getRolId());
+            claims.put("userId", user.getId());
             claims.put("fullName", user.getNames() + " " + user.getLastNames());
 
             String accessToken = Jwts.builder()
@@ -66,11 +64,20 @@ public class AuthTokenAdapter implements AuthTokenRepository {
                     .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                     .compact();
 
-            return new AuthToken(accessToken, refreshToken, accessTokenExpiration, refreshTokenExpiration, user.getId(), user.getEmail(), user.getRolId().toString());
+
+            return new TokenDto(
+                    accessToken,
+                    refreshToken,
+                    accessTokenExpiration,
+                    refreshTokenExpiration,
+                    user.getEmail(),
+                    user.getRolId(),
+                    user.getId(),
+                    user.getNames() + " " + user.getLastNames()
+            );
         });
     }
 
-    @Override
     public Mono<Boolean> validateToken(String token) {
         return Mono.fromCallable(() -> {
             try {
@@ -80,13 +87,11 @@ public class AuthTokenAdapter implements AuthTokenRepository {
                         .parseClaimsJws(token);
                 return true;
             } catch (JwtException | IllegalArgumentException e) {
-                log.warn("Token validation failed: {}", e.getMessage());
                 return false;
             }
         });
     }
 
-    @Override
     public Mono<String> getEmailFromToken(String token) {
         return Mono.fromCallable(() -> {
             Claims claims = Jwts.parserBuilder()
@@ -98,7 +103,6 @@ public class AuthTokenAdapter implements AuthTokenRepository {
         });
     }
 
-    @Override
     public Mono<String> getRoleFromToken(String token) {
         return Mono.fromCallable(() -> {
             Claims claims = Jwts.parserBuilder()
@@ -110,7 +114,6 @@ public class AuthTokenAdapter implements AuthTokenRepository {
         });
     }
 
-    @Override
     public Mono<Long> getUserIdFromToken(String token) {
         return Mono.fromCallable(() -> {
             Claims claims = Jwts.parserBuilder()
@@ -122,15 +125,26 @@ public class AuthTokenAdapter implements AuthTokenRepository {
         });
     }
 
-    @Override
-    public Mono<AuthToken> refreshToken(String refreshToken) {
+    public Mono<TokenDto> refreshToken(String refreshToken) {
         return validateToken(refreshToken)
                 .flatMap(valid -> {
                     if (valid == null || !valid) {
                         return Mono.error(new RuntimeException("Refresh token inválido"));
                     }
+
                     return getEmailFromToken(refreshToken)
-                            .flatMap(email -> Mono.just(new AuthToken(refreshToken, refreshToken, LocalDateTime.now(), LocalDateTime.now(), 1L, email, "1")));
+                            .flatMap(this::generateTokenFromEmail);
                 });
     }
+
+    private Mono<TokenDto> generateTokenFromEmail(String email) {
+        User tempUser = new User();
+        tempUser.setEmail(email);
+
+        return generateToken(tempUser);
+    }
+
+
+
+
 }

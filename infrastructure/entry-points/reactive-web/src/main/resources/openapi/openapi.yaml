@@ -28,8 +28,8 @@ paths:
             schema:
               $ref: '#/components/schemas/UserLoginRequestDto'
             example:
-              email: "user@example.com"
-              password: "password123"
+              email: "john.doe@email.com"
+              password: "12345678"
       responses:
         '200':
           description: Successful authentication
