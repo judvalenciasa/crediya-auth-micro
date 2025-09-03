@@ -39,7 +39,6 @@ public class Token {
         return Mono.fromCallable(() -> {
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime accessTokenExpiration = now.plusSeconds(jwtExpiration / 1000);
-            LocalDateTime refreshTokenExpiration = now.plusSeconds(jwtRefreshExpiration / 1000);
 
             Map<String, Object> claims = new HashMap<>();
 
@@ -56,20 +55,9 @@ public class Token {
                     .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                     .compact();
 
-            String refreshToken = Jwts.builder()
-                    .setClaims(claims)
-                    .setSubject(user.getEmail())
-                    .setIssuedAt(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
-                    .setExpiration(Date.from(refreshTokenExpiration.atZone(ZoneId.systemDefault()).toInstant()))
-                    .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                    .compact();
-
-
             return new TokenDto(
                     accessToken,
-                    refreshToken,
                     accessTokenExpiration,
-                    refreshTokenExpiration,
                     user.getEmail(),
                     user.getRolId(),
                     user.getId(),
@@ -125,17 +113,6 @@ public class Token {
         });
     }
 
-    public Mono<TokenDto> refreshToken(String refreshToken) {
-        return validateToken(refreshToken)
-                .flatMap(valid -> {
-                    if (valid == null || !valid) {
-                        return Mono.error(new RuntimeException("Refresh token inválido"));
-                    }
-
-                    return getEmailFromToken(refreshToken)
-                            .flatMap(this::generateTokenFromEmail);
-                });
-    }
 
     private Mono<TokenDto> generateTokenFromEmail(String email) {
         User tempUser = new User();

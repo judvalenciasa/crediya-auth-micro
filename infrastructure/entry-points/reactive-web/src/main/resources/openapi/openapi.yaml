@@ -39,7 +39,6 @@ paths:
                 $ref: '#/components/schemas/UserLoginResponseDto'
               example:
                 accessToken: "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c3VhcmlvQGV4YW1wbGUuY29tIiwiaWF0IjoxNjM5NzI5NjAwLCJleHAiOjE2Mzk3MzMyMDB9..."
-                refreshToken: "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c3VhcmlvQGV4YW1wbGUuY29tIiwiaWF0IjoxNjM5NzI5NjAwLCJleHAiOjE2Mzk3ODU2MDB9..."
                 email: "user@example.com"
                 role: "CLIENT"
                 userId: 123
