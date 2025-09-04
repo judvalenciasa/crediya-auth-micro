@@ -48,4 +48,14 @@ public class RolReactiveRepositoryAdapter extends ReactiveAdapterOperations<
                 .map(rol->mapper.map(rol, Rol.class))
                 .onErrorMap(error -> new HandleDatabaseError("Error buscando rol: " + error.getMessage()));
     }
+
+    @Override
+    public Mono<Rol> updateRol(Rol rol) {
+        return transactionalOperator.transactional(
+                repository.findById(rol.getIdRol())
+                        .switchIfEmpty(Mono.error(new HandleDatabaseError("Rol no encontrado con id: " + rol.getIdRol())))
+                        .then(save(rol))
+                        .onErrorMap(error -> new HandleDatabaseError("Error actualizando rol: " + error.getMessage()))
+        );
+    }
 }

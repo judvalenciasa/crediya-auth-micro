@@ -1,4 +1,4 @@
-package co.com.crediauth.auth.jwt.security;
+package co.com.crediauth.auth.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

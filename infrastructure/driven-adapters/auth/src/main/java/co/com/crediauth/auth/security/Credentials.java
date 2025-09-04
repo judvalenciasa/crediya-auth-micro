@@ -1,4 +1,4 @@
-package co.com.crediauth.auth.jwt.security;
+package co.com.crediauth.auth.security;
 
 import co.com.crediauth.model.seguridad.LoginRequest;
 import co.com.crediauth.model.user.User;

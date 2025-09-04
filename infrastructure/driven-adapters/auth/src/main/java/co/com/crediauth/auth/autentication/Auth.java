@@ -1,8 +1,8 @@
-package co.com.crediauth.auth.jwt.autentication;
+package co.com.crediauth.auth.autentication;
 
-import co.com.crediauth.auth.jwt.security.Credentials;
-import co.com.crediauth.auth.jwt.security.PasswordEncryption;
-import co.com.crediauth.auth.jwt.security.Token;
+import co.com.crediauth.auth.security.Credentials;
+import co.com.crediauth.auth.security.PasswordEncryption;
+import co.com.crediauth.auth.security.Token;
 import co.com.crediauth.model.seguridad.LoginRequest;
 
 import co.com.crediauth.model.seguridad.LoginResponse;

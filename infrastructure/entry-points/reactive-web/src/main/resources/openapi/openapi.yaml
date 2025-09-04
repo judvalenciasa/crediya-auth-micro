@@ -289,7 +289,7 @@ paths:
       summary: Delete role
       description: Deletes a role from the system
       security:
-        - BearerAuth: []
+        - BearerAuth: [ ]
       parameters:
         - name: idRol
           in: path
@@ -310,6 +310,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseDto'
         '404':
           description: Role not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+        '500':
+          description: Internal server error
           content:
             application/json:
               schema:

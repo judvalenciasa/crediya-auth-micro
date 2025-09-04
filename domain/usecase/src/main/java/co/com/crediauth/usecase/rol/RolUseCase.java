@@ -17,7 +17,7 @@ public class RolUseCase implements IRolUseCase{
 
     @Override
     public Mono<Rol> updateRol(Rol rol) {
-        return rolRepository.findRolById(rol.getIdRol());
+        return rolRepository.updateRol(rol);
     }
 
     @Override
