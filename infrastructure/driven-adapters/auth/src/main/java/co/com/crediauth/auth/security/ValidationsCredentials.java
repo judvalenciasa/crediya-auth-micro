@@ -1,12 +1,14 @@
 package co.com.crediauth.auth.security;
 
-
-import co.com.crediauth.auth.dto.TokenDto;
+import co.com.crediauth.model.seguridad.LoginResponse;
+import co.com.crediauth.model.seguridad.gateways.AuthGateway;
 import co.com.crediauth.model.user.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -19,7 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class Token {
+@RequiredArgsConstructor
+public class ValidationsCredentials implements AuthGateway{
+    private final PasswordEncoder passwordEncoder ;
+
     @Value("${jwt.secret}")
     private String jwtSecret;
 
@@ -30,36 +35,45 @@ public class Token {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public Mono<TokenDto> generateToken(User user) {
+    @Override
+    public Mono<LoginResponse> generateToken(User user) {
         return Mono.fromCallable(() -> {
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime accessTokenExpiration = now.plusSeconds(jwtExpiration * 24 * 60 * 60 * 1000);
 
             Map<String, Object> claims = new HashMap<>();
 
-            claims.put("email", user.getEmail());
             claims.put("role", user.getRolId());
-            claims.put("userId", user.getId());
-            claims.put("fullName", user.getNames() + " " + user.getLastNames());
 
             String accessToken = Jwts.builder()
                     .setClaims(claims)
-                    .setSubject(user.getEmail())
                     .setIssuedAt(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
                     .setExpiration(Date.from(accessTokenExpiration.atZone(ZoneId.systemDefault()).toInstant()))
                     .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                     .compact();
 
 
-            return new TokenDto(
+            return new LoginResponse(
                     accessToken,
                     accessTokenExpiration,
-                    user.getEmail(),
-                    user.getRolId(),
-                    user.getId(),
-                    user.getNames() + " " + user.getLastNames()
+                    user.getRolId()
             );
         });
     }
 
+    @Override
+    public Mono<Boolean> authenticateUser(String credentialPassword, String userPassword) {
+        if(passwordEncoder.matches(credentialPassword, userPassword)) {
+            return Mono.just(true);
+        } else {
+            return Mono.just(false);
+        }
+    }
+
+
+    public Mono<String> encodePassword(String plainPassword) {
+        return Mono.fromCallable(() -> {
+            return passwordEncoder.encode(plainPassword);
+        });
+    }
 }

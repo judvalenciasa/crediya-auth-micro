@@ -6,5 +6,4 @@ import reactor.core.publisher.Mono;
 
 public interface ISecurityUseCase {
     Mono<LoginResponse> login(LoginRequest loginRequest);
-    Mono<String> encodePassword(String plainPassword);
 }
