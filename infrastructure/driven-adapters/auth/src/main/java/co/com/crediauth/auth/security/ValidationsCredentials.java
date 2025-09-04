@@ -1,6 +1,7 @@
 package co.com.crediauth.auth.security;
 
 import co.com.crediauth.model.seguridad.LoginResponse;
+import co.com.crediauth.model.seguridad.TokenValidationResult;
 import co.com.crediauth.model.seguridad.gateways.AuthGateway;
 import co.com.crediauth.model.user.User;
 import io.jsonwebtoken.Jwts;
@@ -22,8 +23,8 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class ValidationsCredentials implements AuthGateway{
-    private final PasswordEncoder passwordEncoder ;
+public class ValidationsCredentials implements AuthGateway {
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -63,7 +64,7 @@ public class ValidationsCredentials implements AuthGateway{
 
     @Override
     public Mono<Boolean> authenticateUser(String credentialPassword, String userPassword) {
-        if(passwordEncoder.matches(credentialPassword, userPassword)) {
+        if (passwordEncoder.matches(credentialPassword, userPassword)) {
             return Mono.just(true);
         } else {
             return Mono.just(false);
@@ -76,4 +77,36 @@ public class ValidationsCredentials implements AuthGateway{
             return passwordEncoder.encode(plainPassword);
         });
     }
+
+
+    @Override
+    public Mono<TokenValidationResult> validateTokenAndExtractRole(String token) {
+        return Mono.fromCallable(() -> {
+            try {
+                var claims = Jwts.parserBuilder()
+                        .setSigningKey(getSigningKey())
+                        .build()
+                        .parseClaimsJws(token)
+                        .getBody();
+
+                Long role = claims.get("role", Long.class);
+
+                return new TokenValidationResult(
+                        true,
+                        role,
+                        "Token válido"
+                );
+
+
+            } catch (Exception e) {
+                return new TokenValidationResult(
+                        false,
+                        null,
+                        "Token inválido: " + e.getMessage()
+                );
+            }
+        });
+    }
+
+
 }

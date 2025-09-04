@@ -56,38 +56,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
 
-  /api/v1/auth/refresh:
-    post:
-      tags:
-        - Authentication
-      summary: Refresh token
-      description: Renews the access token using the refresh token
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: string
-            example: "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c3VhcmlvQGV4YW1wbGUuY29tIiwiaWF0IjoxNjM5NzI5NjAwLCJleHAiOjE2Mzk3ODU2MDB9..."
-      responses:
-        '200':
-          description: Token successfully renewed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserLoginResponseDto'
-        '401':
-          description: Invalid or expired refresh token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponseDto'
-        '400':
-          description: Invalid input data
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponseDto'
 
   # User endpoints
   /api/v1/users:
