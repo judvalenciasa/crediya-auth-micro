@@ -28,8 +28,8 @@ paths:
             schema:
               $ref: '#/components/schemas/UserLoginRequestDto'
             example:
-              email: "john.doe@email.com"
-              password: "12345678"
+              email: "judvalenciasa@gmail.com"
+              password: "8785496"
       responses:
         '200':
           description: Successful authentication
@@ -39,10 +39,10 @@ paths:
                 $ref: '#/components/schemas/UserLoginResponseDto'
               example:
                 accessToken: "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c3VhcmlvQGV4YW1wbGUuY29tIiwiaWF0IjoxNjM5NzI5NjAwLCJleHAiOjE2Mzk3MzMyMDB9..."
-                email: "user@example.com"
-                role: "CLIENT"
+                email: "judvalenciasa@gmail.com"
+                role: "ADMINISTRADOR"
                 userId: 123
-                fullName: "John Doe"
+                fullName: "Juan David Valencia"
         '401':
           description: Invalid credentials
           content:
@@ -73,15 +73,15 @@ paths:
             schema:
               $ref: '#/components/schemas/UserCreateRequestDto'
             example:
-              names: "John Carlos"
-              lastNames: "Doe Smith"
-              email: "john.doe@email.com"
-              baseSalary: 2500000.0
+              names: "Juan David "
+              lastNames: "Valencia Salgado"
+              email: "judvalenciasa@email.com"
+              baseSalary: 200000.0
               birthDate: "1990-05-15"
               address: "Street 123 #45-67"
               phone: "+573001234567"
-              documentId: "12345678"
-              rolId: 15
+              documentId: "8785496"
+              rolId: 21
       responses:
         '200':
           description: User successfully created

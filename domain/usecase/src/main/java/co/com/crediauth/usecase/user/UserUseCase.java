@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class UserUseCase implements InterfaceUserUseCase {
     static final double SALARY_BASE_PERMITED = 15000000;
+    private static final int CANTIDAD_INTENTOS = 3;
     private final UserRepository userRepository;
     private final RolRepository rolRepository;
     private final AuthGateway authGateway;
@@ -63,6 +64,7 @@ public class UserUseCase implements InterfaceUserUseCase {
                 .map(password -> {
                     user.setPassword(password);
                     user.setEnabled(true);
+                    user.setLoginAttempts(CANTIDAD_INTENTOS);
                     return user;
                 })
                 .then();

@@ -15,6 +15,7 @@ public class User {
     private String documentId;
     private String password;
     private boolean enabled;
+    private int loginAttempts;
 
 
     public User() {
@@ -29,6 +30,15 @@ public class User {
         this.address = address;
         this.phone = phone;
         this.documentId = documentId;
+        this.loginAttempts = 3;
+    }
+
+    public int getLoginAttempts() {
+        return loginAttempts;
+    }
+
+    public void setLoginAttempts(int loginAttempts) {
+        this.loginAttempts = loginAttempts;
     }
 
     public String getPassword() {

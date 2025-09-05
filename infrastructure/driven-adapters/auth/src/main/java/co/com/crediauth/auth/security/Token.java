@@ -23,7 +23,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class ValidationsCredentials implements AuthGateway {
+public class Token implements AuthGateway {
     private final PasswordEncoder passwordEncoder;
 
     @Value("${jwt.secret}")

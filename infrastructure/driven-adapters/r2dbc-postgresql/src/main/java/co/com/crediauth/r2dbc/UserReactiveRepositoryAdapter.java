@@ -48,6 +48,17 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
                 .onErrorMap(error -> new HandleDatabaseError("Error verificando documento: " + error.getMessage()));
     }
 
+    @Override
+    public Mono<User> updateUser(User user) {
+        return transactionalOperator.transactional(repository.findById(user.getId())
+                .switchIfEmpty(Mono.error(new HandleDatabaseError("Usuario no encontrado con id: " + user.getId())))
+                .then(Mono.just(user)
+                        .map(u -> mapper.map(u, UserEntity.class))
+                        .flatMap(repository::save)
+                        .map(savedEntity -> mapper.map(savedEntity, User.class))
+                        .onErrorMap(error -> new HandleDatabaseError("Error actualizando usuario: " + error.getMessage()))
+                        .as(transactionalOperator::transactional)));
+    }
 
 
 }

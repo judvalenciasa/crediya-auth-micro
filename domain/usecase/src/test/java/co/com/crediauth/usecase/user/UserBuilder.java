@@ -73,6 +73,8 @@ public class UserBuilder {
         return this;
     }
 
+
+
     public User build() {
         User user = new User();
         user.setId(id);
@@ -130,7 +132,7 @@ public class UserBuilder {
 
     public static UserBuilder aHighSalaryUser() {
         return aValidUser()
-                .baseSalary(20000000.0); // Excede el límite para pruebas
+                .baseSalary(20000000.0);
     }
 
     public static UserBuilder aUserWithExistingEmail(String email) {

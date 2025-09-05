@@ -13,6 +13,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 public class SecurityUseCase implements ISecurityUseCase{
+    private static final int CANTIDAD_INTENTOS = 3;
     private final AuthGateway authGateway;
     private final UserRepository userRepository;
 
@@ -24,9 +25,17 @@ public class SecurityUseCase implements ISecurityUseCase{
                         authGateway.authenticateUser(loginRequest.password(), user.getPassword())
                                 .flatMap(valid -> {
                                     if (valid) {
-                                        return authGateway.generateToken(user);
+                                        user.setLoginAttempts(CANTIDAD_INTENTOS);
+                                        return userRepository.updateUser(user)
+                                                .then(authGateway.generateToken(user));
                                     } else {
-                                        return Mono.error(new BusinessException("Credenciales inválidas"));
+                                        int currentAttempts = user.getLoginAttempts();
+                                        if (currentAttempts <= 1) {
+                                            return Mono.error(new BusinessException("Usuario bloqueado por exceso de intentos fallidos"));
+                                        }
+                                        user.setLoginAttempts(currentAttempts - 1);
+                                        return userRepository.updateUser(user)
+                                                .then(Mono.error(new BusinessException("Credenciales inválidas. Intentos restantes: " + (currentAttempts - 1))));
                                     }
                                 })
                 );

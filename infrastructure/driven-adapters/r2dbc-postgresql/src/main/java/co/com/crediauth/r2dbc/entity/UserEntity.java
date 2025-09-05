@@ -46,4 +46,7 @@ public class UserEntity {
 
     @Column("activo")
     private boolean enabled;
+
+    @Column("intentos_login")
+    private int loginAttempts;
 }
