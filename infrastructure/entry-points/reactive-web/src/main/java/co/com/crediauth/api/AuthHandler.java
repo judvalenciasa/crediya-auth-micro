@@ -13,6 +13,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 
 @Slf4j
 @Component
@@ -35,8 +37,7 @@ public class AuthHandler {
                     if (throwable.getMessage().contains("Credenciales inválidas")) {
                         return ServerResponse.badRequest()
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(new AuthenticationException(throwable.getMessage()) {
-                                });
+                                .bodyValue(Map.of("error", throwable.getMessage()));
                     }
                     return exceptionHandler.handleError(throwable);
                 });

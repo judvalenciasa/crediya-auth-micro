@@ -60,5 +60,10 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
                         .as(transactionalOperator::transactional)));
     }
 
-
+    @Override
+    public Mono<User> findById(Long idUser) {
+        return super.findById(idUser)
+                .map(user->mapper.map(user, User.class))
+                .onErrorMap(error -> new HandleDatabaseError("Error buscando por idUser: " + error.getMessage()));
+    }
 }

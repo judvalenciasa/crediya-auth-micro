@@ -8,11 +8,21 @@ public class TokenValidationResult {
     private Boolean valid;
     private Long role;
     private String message;
+    private Long userId;
 
-    public TokenValidationResult(Boolean valid, Long role, String message) {
+    public TokenValidationResult(Boolean valid, Long role, String message, Long userId) {
         this.valid = valid;
         this.role = role;
         this.message = message;
+        this.userId = userId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Boolean getValid() {

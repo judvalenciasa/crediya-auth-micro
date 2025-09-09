@@ -45,6 +45,7 @@ public class Token implements AuthGateway {
             Map<String, Object> claims = new HashMap<>();
 
             claims.put("role", user.getRolId());
+            claims.put("userId", user.getId());
 
             String accessToken = Jwts.builder()
                     .setClaims(claims)
@@ -90,11 +91,14 @@ public class Token implements AuthGateway {
                         .getBody();
 
                 Long role = claims.get("role", Long.class);
+                Long userId = claims.get("userId", Long.class);
 
                 return new TokenValidationResult(
                         true,
                         role,
-                        "Token válido"
+                        "Token válido",
+                        userId
+
                 );
 
 
@@ -102,7 +106,8 @@ public class Token implements AuthGateway {
                 return new TokenValidationResult(
                         false,
                         null,
-                        "Token inválido: " + e.getMessage()
+                        "Token inválido: " + e.getMessage(),
+                        null
                 );
             }
         });

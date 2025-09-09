@@ -45,30 +45,37 @@ public class SecurityUseCase implements ISecurityUseCase{
     public Mono<Boolean> isTokenValidAndHasAccess(String token, String path, String method) {
         return authGateway.validateTokenAndExtractRole(token)
                 .flatMap(result -> {
-                    if (!result.getValid()) {
-                        return Mono.just(false);
+                    if (Boolean.TRUE.equals(result.getValid())) {
+                        return userRepository.findById(result.getUserId())
+                                .flatMap(user -> {
+                                    String documentId = user.getDocumentId();
+                                    return hasRoleAccess(result.getRole(), documentId, path, method);
+                                })
+                                .switchIfEmpty(Mono.just(false));
                     }
-
-                    return hasRoleAccess(result.getRole(), path, method);
-                })
-                .onErrorResume(throwable -> {
                     return Mono.just(false);
-                });
+                })
+                .onErrorResume(throwable -> Mono.just(false));
     }
 
-    private Mono<Boolean> hasRoleAccess(Long role, String path, String method) {
+    private Mono<Boolean> hasRoleAccess(Long role, String documentId, String path, String method) {
         Long administrador = 21L;
         Long asesor = 23L;
         Long cliente = 22L;
 
         return Mono.fromCallable(() -> {
             Map<String, List<Long>> rules = Map.of(
+                    "/api/v1/users/*", List.of(administrador, asesor),
                     "/api/v1/users:POST", List.of(administrador, asesor),
                     "/api/v1/reports:GET", List.of(administrador),
                     "/api/v1/roles:*", List.of(administrador),
                     "/api/v1/requests:POST", List.of(cliente),
                     "/api/v1/requests:GET", List.of(asesor),
-                    "/api/v1/requests:PUT", List.of(asesor)
+                    "/api/v1/requests:PUT", List.of(asesor),
+
+                    "/api/v1/users/"+documentId+":GET", List.of(cliente, administrador)
+
+
             );
 
             String key = path + ":" + method;
@@ -86,7 +93,6 @@ public class SecurityUseCase implements ISecurityUseCase{
             return false;
         });
     }
-
 
 
 }
